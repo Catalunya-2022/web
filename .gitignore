@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+build/
+
+# debug logs
+npm-debug.log*
+
+# env files (keep .env.example tracked as documentation)
+.env*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- generated at build time (do NOT commit) ----
+# OG images (scripts/generate-og-images.tsx)
+public/og/
+# PWA manifests (scripts/generate-manifests.ts)
+public/manifest-*.webmanifest
+# search corpus (scripts/generate-search-corpus.ts)
+public/search-corpus-*.json
+# llms.txt family (scripts/generate-llms-files.ts)
+public/llms.txt
+public/llms-full.txt
+public/en/
+public/es/
+# per-page sitemap dates (scripts/generate-content-dates.ts)
+src/lib/data/content-dates.generated.json
+
+# test artifacts (Playwright)
+# visual snapshots are platform-specific — regenerate locally with
+# `npm run test:e2e:update`
+tests/e2e/visual.spec.ts-snapshots/
+test-results/
+playwright-report/

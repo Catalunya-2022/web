@@ -1,0 +1,289 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Light theme tokens in the Catalunya 2022 palette. */
+:root {
+  --radius: 0.625rem;
+
+  /* Core backgrounds & text */
+  --background: oklch(1 0 0);                       /* #FFFFFF */
+  --foreground: oklch(0.2137 0.006 325.8);          /* #252226 */
+
+  /* Primary: red — CTA, links, active states (6.27:1 on white) */
+  --primary: oklch(0.4716 0.1878 25.04);            /* #BF1523 */
+  --primary-foreground: oklch(1 0 0);               /* #FFFFFF */
+
+  /* Secondary: rose — large text only, borders (3.88:1 on white, fails AA normal) */
+  --secondary: oklch(0.5847 0.1494 18.76);          /* #D95560 */
+  --secondary-foreground: oklch(1 0 0);             /* #FFFFFF */
+
+  /* Accent: neutral hover bg (shadcn uses this for button/menu hover) */
+  --accent: oklch(0.975 0 0);                        /* #F7F7F7 — neutral gray */
+  --accent-foreground: oklch(0.2137 0.006 325.8);   /* #252226 */
+
+  /* Muted: sidebar/light gray */
+  --muted: oklch(0.9551 0 0);                       /* #F2F2F2 */
+  --muted-foreground: oklch(0.55 0.006 325.8);      /* ~#737073 */
+
+  /* Card & popover: white */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2137 0.006 325.8);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2137 0.006 325.8);
+
+  /* Destructive: same as primary red */
+  --destructive: oklch(0.4716 0.1878 25.04);
+  --destructive-foreground: oklch(1 0 0);
+
+  /* Borders & inputs */
+  --border: oklch(0.92 0 0);                        /* ~#EBEBEB */
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.4716 0.1878 25.04);               /* Focus ring = primary red */
+
+  /* Chart colors */
+  --chart-1: oklch(0.4716 0.1878 25.04);            /* Red */
+  --chart-2: oklch(0.5847 0.1494 18.76);            /* Rose */
+  --chart-3: oklch(0.7604 0.0893 16.54);            /* Pink */
+  --chart-4: oklch(0.65 0.12 18);
+  --chart-5: oklch(0.85 0.04 16);
+
+  /* Sidebar: white background */
+  --sidebar: oklch(1 0 0);                          /* #FFFFFF */
+  --sidebar-foreground: oklch(0.45 0.006 325.8);    /* ~#6B6B6B — gray for inactive links */
+  --sidebar-primary: oklch(0.4716 0.1878 25.04);    /* #BF1523 — active text */
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.975 0 0);               /* #F7F7F7 — neutral hover bg */
+  --sidebar-accent-foreground: oklch(0.2137 0.006 325.8); /* Dark text on hover */
+  --sidebar-border: oklch(0.92 0 0);                /* ~#EBEBEB */
+  --sidebar-ring: oklch(0.4716 0.1878 25.04);
+}
+
+/* Dark theme swaps the primary accent to pink to preserve contrast. */
+.dark {
+  --background: oklch(0.15 0.004 325.8);            /* #1A181C (warmer than #252226) */
+  --foreground: oklch(0.9551 0 0);                  /* #F2F2F2 */
+
+  --primary: oklch(0.7604 0.0893 16.54);            /* #F29BA2 — 7.48:1 on dark */
+  --primary-foreground: oklch(0.15 0.004 325.8);
+
+  --secondary: oklch(0.32 0.02 325.8);
+  --secondary-foreground: oklch(0.9551 0 0);
+
+  --accent: oklch(0.22 0.006 325.8);                 /* Neutral dark hover */
+  --accent-foreground: oklch(0.9551 0 0);
+
+  --muted: oklch(0.28 0.006 325.8);
+  --muted-foreground: oklch(0.65 0.006 325.8);
+
+  --card: oklch(0.2137 0.006 325.8);                /* #252226 */
+  --card-foreground: oklch(0.9551 0 0);
+  --popover: oklch(0.2137 0.006 325.8);
+  --popover-foreground: oklch(0.9551 0 0);
+
+  --destructive: oklch(0.55 0.17 25.04);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.32 0.006 325.8);
+  --input: oklch(0.32 0.006 325.8);
+  --ring: oklch(0.7604 0.0893 16.54);
+
+  --chart-1: oklch(0.5847 0.1494 18.76);
+  --chart-2: oklch(0.7604 0.0893 16.54);
+  --chart-3: oklch(0.4716 0.1878 25.04);
+  --chart-4: oklch(0.65 0.12 18);
+  --chart-5: oklch(0.85 0.04 16);
+
+  --sidebar: oklch(0.15 0.004 325.8);               /* #1A181C — matches main bg */
+  --sidebar-foreground: oklch(0.6 0.006 325.8);     /* Gray for inactive links */
+  --sidebar-primary: oklch(0.7604 0.0893 16.54);    /* Pink — active text */
+  --sidebar-primary-foreground: oklch(0.15 0.004 325.8);
+  --sidebar-accent: oklch(0.22 0.006 325.8);        /* Subtle lighter dark for hover */
+  --sidebar-accent-foreground: oklch(0.9551 0 0);
+  --sidebar-border: oklch(0.25 0.006 325.8);
+  --sidebar-ring: oklch(0.7604 0.0893 16.54);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+/* Override prose link styling from @tailwindcss/typography. */
+.prose a {
+  color: var(--color-primary);
+  font-weight: inherit;
+  text-decoration: underline;
+  text-decoration-color: oklch(from var(--color-primary) l c h / 0.4);
+  text-underline-offset: 2px;
+  transition-property: color, text-decoration-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.prose a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+}
+.prose a:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Clip sidebar content so active backgrounds do not bleed past the fixed header. */
+[data-slot="sidebar-wrapper"] {
+  min-height: calc(100svh - 3.5rem) !important;
+}
+
+[data-slot="sidebar-container"] {
+  top: 3.5rem !important;
+  height: calc(100svh - 3.5rem) !important;
+  overflow: clip;
+}
+
+[data-slot="sidebar-inner"] {
+  overflow: clip;
+}
+
+[data-slot="sidebar-content"] {
+  padding-right: 2px;
+  overflow-x: hidden;
+}
+
+/* Remove right-side submenu spacing to reduce label truncation. */
+[data-slot="sidebar-menu-sub"] {
+  margin-right: 0;
+  padding-right: 0;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.gradient-animated {
+  background-image: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-chart-3), var(--color-primary));
+  background-size: 200% auto;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+.gradient-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, 20px) scale(1.05); }
+  66% { transform: translate(-20px, 10px) scale(0.95); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, 15px) scale(0.95); }
+  66% { transform: translate(15px, -10px) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  /* Force light theme for all printed output. */
+  :root { color-scheme: light; }
+  body { background: white !important; color: black !important; }
+
+  /* Remove sidebar offset and content width constraint. */
+  [data-slot="sidebar-inset"] { margin-left: 0 !important; }
+  #main-content { padding-top: 0 !important; }
+  #main-content > div > div { max-width: none !important; padding: 0 !important; }
+
+  /* Hide sidebar (all slots). */
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-container"] { display: none !important; }
+
+  /* Hide Radix portals (dropdown menus, dialogs, tooltips). */
+  [data-radix-popper-content-wrapper],
+  [role="dialog"][data-state] { display: none !important; }
+
+  /* Links become plain text. */
+  a { color: inherit !important; text-decoration: none !important; }
+
+  /* Page break hygiene. */
+  h2, h3 { break-after: avoid; }
+  tr { break-inside: avoid; }
+  img { break-inside: avoid; }
+
+  /* Gradient text: reset to plain foreground for print. */
+  .gradient-text {
+    -webkit-text-fill-color: unset !important;
+    background: none !important;
+  }
+}

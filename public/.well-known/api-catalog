@@ -1,0 +1,13 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://mcp.2022.cat",
+      "service-doc": [
+        { "href": "https://2022.cat/mcp", "type": "text/html" }
+      ],
+      "service-meta": [
+        { "href": "https://2022.cat/.well-known/mcp/server-card.json", "type": "application/json" }
+      ]
+    }
+  ]
+}

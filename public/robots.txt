@@ -1,0 +1,20 @@
+User-Agent: GPTBot
+User-Agent: OAI-SearchBot
+User-Agent: ChatGPT-User
+User-Agent: ClaudeBot
+User-Agent: Claude-SearchBot
+User-Agent: Claude-User
+User-Agent: PerplexityBot
+User-Agent: Perplexity-User
+User-Agent: Google-Extended
+User-Agent: BraveBot
+User-Agent: Applebot-Extended
+User-Agent: meta-externalagent
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-Agent: *
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+Sitemap: https://2022.cat/sitemap.xml
