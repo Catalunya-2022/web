@@ -1,0 +1,18 @@
+{
+  "serverInfo": {
+    "name": "catalunya-2022",
+    "title": "Catalunya 2022 - RESET: Crida per reactivar el país",
+    "version": "1.0.0"
+  },
+  "description": "Full-text access to «Catalunya 2022 - RESET: Crida per reactivar el país», the strategic policy document with 3 spheres, 12 goals, and 91 actions authored by 30 Catalan civil-society experts. Provides document search, section retrieval, proposal listings, and contributor profiles in Catalan, English, and Spanish. No authentication required.",
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://mcp.2022.cat"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {}
+  },
+  "websiteUrl": "https://2022.cat/mcp"
+}

@@ -1,0 +1,5 @@
+Contact: mailto:info@2022.cat
+Expires: 2027-08-17T00:00:00.000Z
+Preferred-Languages: ca, en, es
+Canonical: https://2022.cat/.well-known/security.txt
+Policy: https://github.com/Catalunya-2022/web/blob/main/SECURITY.md

@@ -1,0 +1,22 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Catalunya 2022"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:2022.cat:server:catalunya-2022",
+      "displayName": "Catalunya 2022",
+      "description": "MCP server for the policy document Catalunya 2022 - RESET: Crida per reactivar el pais. Full-text search, section retrieval, and proposal listings across 3 spheres, 12 goals, and 91 actions in Catalan, English, and Spanish. No authentication.",
+      "type": "application/mcp-server-card+json",
+      "url": "https://mcp.2022.cat/.well-known/mcp/server-card.json",
+      "tags": ["public-policy", "civic-tech", "catalonia", "multilingual", "document-search"],
+      "representativeQueries": [
+        "What does the Catalunya 2022 RESET plan propose about housing?",
+        "Quines accions proposa el pla Catalunya 2022 sobre educacio?",
+        "Summarize sphere 2 of the Catalunya 2022 strategic plan",
+        "Que propone el documento Catalunya 2022 sobre energia?"
+      ]
+    }
+  ]
+}
