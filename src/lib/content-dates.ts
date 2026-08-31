@@ -3,7 +3,7 @@ import path from "node:path";
 
 /** Date of the last site-wide change (layout/metadata alter every rendered
  *  page). Bump manually on the next one; newer per-page git dates win. */
-export const BASE_LAST_MOD = "2026-08-18";
+export const BASE_LAST_MOD = "2026-08-31";
 
 type ContentDates = { taskForce?: string; pages?: Record<string, string> };
 

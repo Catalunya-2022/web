@@ -1,4 +1,5 @@
 import { MobileBreadcrumbBar } from "@/components/layout/mobile-breadcrumb-bar";
+import { WebMcpTools } from "@/components/layout/webmcp-tools";
 import { CopyPageProvider } from "@/components/content/copy-page-context";
 import type { Locale } from "@/i18n/routing";
 
@@ -14,6 +15,7 @@ export function ContentArea({ children, locale }: { children: React.ReactNode; l
           </div>
         </div>
       </div>
+      <WebMcpTools locale={locale} />
     </CopyPageProvider>
   );
 }

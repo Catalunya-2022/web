@@ -9,6 +9,20 @@ test("home page keeps its primary search and action entry points", async ({ page
   await expect(page.getByRole("link", { name: /Explore All Actions/i })).toBeVisible();
 });
 
+test("a browser without the WebMCP API loads with no tool code and no console errors", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    const fromAnalytics = [message.text(), message.location().url].some((s) => s.includes("/reset/"));
+    if (message.type() === "error" && !fromAnalytics) errors.push(message.text());
+  });
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  await gotoStablePage(page, "/en");
+
+  expect(await page.evaluate(() => typeof document.modelContext)).toBe("undefined");
+  expect(errors).toEqual([]);
+});
+
 test("keyboard search navigates to a selected result", async ({ page }) => {
   await gotoStablePage(page, "/en");
 

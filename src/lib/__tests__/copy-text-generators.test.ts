@@ -7,9 +7,15 @@ import {
   mcpIntroText,
   mcpPrompts,
   mcpResources,
+  mcpSectionHeadings,
   mcpServerDescription,
   mcpTechnicalDetails,
   mcpTools,
+  webmcpAvailability,
+  webmcpAvailabilityLead,
+  webmcpClosingText,
+  webmcpIntroText,
+  webmcpTools,
 } from "../data/mcp";
 
 describe("buildCopyPagePayload", () => {
@@ -62,6 +68,13 @@ describe("generateMcpPageText", () => {
         clients: mcpClientConfigs,
         exampleQuestions: mcpExampleQuestions.en,
         technical: mcpTechnicalDetails,
+        browser: {
+          intro: webmcpIntroText.en,
+          tools: webmcpTools,
+          availabilityLead: webmcpAvailabilityLead.en,
+          availability: webmcpAvailability.map((item) => item.en),
+          closing: webmcpClosingText.en,
+        },
       },
       "en",
     );
@@ -73,6 +86,42 @@ describe("generateMcpPageText", () => {
     expect(text).toContain("```text");
     expect(text).toContain("## What Can You Ask?");
     expect(text).toContain("- What are the 3 spheres and how many goals does each one have?");
+  });
+
+  it("documents the in-browser tools between the prompts and the technical details", () => {
+    for (const locale of ["ca", "en", "es"] as const) {
+      const text = generateMcpPageText(
+        {
+          intro: mcpIntroText[locale],
+          serverDescription: mcpServerDescription[locale],
+          tools: mcpTools,
+          resources: mcpResources,
+          prompts: mcpPrompts,
+          clients: mcpClientConfigs,
+          exampleQuestions: mcpExampleQuestions[locale],
+          technical: mcpTechnicalDetails,
+          browser: {
+            intro: webmcpIntroText[locale],
+            tools: webmcpTools,
+            availabilityLead: webmcpAvailabilityLead[locale],
+            availability: webmcpAvailability.map((item) => item[locale]),
+            closing: webmcpClosingText[locale],
+          },
+        },
+        locale,
+      );
+
+      const heading = `## ${mcpSectionHeadings.browser[locale]}`;
+      expect(text).toContain(heading);
+      expect(text.indexOf(heading)).toBeGreaterThan(text.indexOf(`## ${mcpSectionHeadings.prompts[locale]}`));
+      expect(text.indexOf(heading)).toBeLessThan(text.indexOf(`## ${mcpSectionHeadings.technical[locale]}`));
+      expect(text).toContain(webmcpIntroText[locale]);
+      for (const tool of webmcpTools) {
+        expect(text).toContain(`- \`${tool.name}\`: ${tool.description[locale]}`);
+      }
+      expect(text).toContain(`- ${webmcpAvailability[0][locale]}`);
+      expect(text).toContain(webmcpClosingText[locale]);
+    }
   });
 });
 

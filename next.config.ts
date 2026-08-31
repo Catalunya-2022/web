@@ -35,10 +35,12 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 2678400,
   },
   async headers() {
+    const originTrialToken = process.env.WEBMCP_ORIGIN_TRIAL_TOKEN;
     return [
       {
         source: "/(.*)",
         headers: [
+          ...(originTrialToken ? [{ key: "Origin-Trial", value: originTrialToken }] : []),
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-DNS-Prefetch-Control", value: "off" },

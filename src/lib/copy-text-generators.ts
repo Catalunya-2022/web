@@ -9,7 +9,7 @@ import type { Organization } from "@/lib/data/organizations";
 import type { Person } from "@/lib/data/people-consulted";
 import type { PressSection } from "@/lib/data/press-coverage";
 import type { ResourceSection } from "@/lib/data/resources";
-import type { McpTool, McpResource, McpPrompt } from "@/lib/data/mcp";
+import type { McpTool, McpResource, McpPrompt, WebMcpToolSpec } from "@/lib/data/mcp";
 import { mcpFieldLabels, mcpSectionHeadings } from "@/lib/data/mcp";
 
 // Keep copy-helper previews short enough for external LLM query URLs.
@@ -246,6 +246,13 @@ type McpPageData = {
     languages: Trilingual<string>;
     content: Trilingual<string>;
   };
+  browser: {
+    intro: string;
+    tools: WebMcpToolSpec[];
+    availabilityLead: string;
+    availability: string[];
+    closing: string;
+  };
 };
 
 export function generateMcpPageText(
@@ -309,6 +316,17 @@ export function generateMcpPageText(
   for (const prompt of data.prompts) {
     lines.push(`- \`${prompt.name}\`: ${prompt.description[locale]}`);
   }
+  lines.push("", `## ${h.browser[locale]}`, "", data.browser.intro, "");
+
+  for (const tool of data.browser.tools) {
+    lines.push(`- \`${tool.name}\`: ${tool.description[locale]}`);
+  }
+  lines.push("", `${data.browser.availabilityLead}:`, "");
+
+  for (const item of data.browser.availability) {
+    lines.push(`- ${item}`);
+  }
+  lines.push("", data.browser.closing);
   lines.push("", `## ${h.technical[locale]}`, "");
 
   lines.push(`- ${labels.protocol[locale]}: ${data.technical.protocol}`);

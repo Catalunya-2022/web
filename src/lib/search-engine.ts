@@ -33,7 +33,7 @@ type SearchOptions = {
   limit?: number;
 };
 
-const MAX_SEARCH_QUERY_LENGTH = 100;
+export const MAX_SEARCH_QUERY_LENGTH = 100;
 const DEFAULT_SNIPPET_WINDOW = 120;
 
 let cache: {
@@ -203,6 +203,11 @@ export async function search(
 export function getCorpusStats(locale: Locale): CorpusStats | null {
   if (cache?.locale !== locale) return null;
   return cache.stats;
+}
+
+export function getCorpusDocuments(locale: Locale): SearchDocument[] | null {
+  if (cache?.locale !== locale) return null;
+  return cache.corpus;
 }
 
 function extractSnippet(

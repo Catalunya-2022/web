@@ -17,7 +17,11 @@ type AnalyticsEventName =
   | "Copy Page: Print"
   | "Search: Open"
   | "Search: Result Click"
-  | "Language Switch";
+  | "Language Switch"
+  | "WebMCP: search_document"
+  | "WebMCP: get_section"
+  | "WebMCP: list_proposals"
+  | "WebMCP: get_document_metadata";
 
 export function trackEvent(name: AnalyticsEventName): void {
   const w = window as { plausible?: PlausibleFn };

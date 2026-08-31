@@ -23,6 +23,7 @@ export default defineConfig({
   projects: [
     {
       name: "desktop-chromium",
+      testIgnore: /webmcp\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1440, height: 1080 },
@@ -30,8 +31,18 @@ export default defineConfig({
     },
     {
       name: "mobile-chromium",
+      testIgnore: /webmcp\.spec\.ts/,
       use: {
         ...devices["Pixel 5"],
+      },
+    },
+    {
+      name: "webmcp-chromium",
+      testMatch: /webmcp\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 1080 },
+        launchOptions: { args: ["--enable-features=WebMCPTesting"] },
       },
     },
   ],

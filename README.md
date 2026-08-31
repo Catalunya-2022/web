@@ -26,7 +26,7 @@ npm run dev     # http://localhost:3000
 npm run build   # build de producció (executa abans tota la cadena de generadors)
 ```
 
-No cal cap variable d'entorn: el build funciona sense configuració. Les opcionals (analítica de Plausible, mida de lot de les imatges OG) estan documentades a `.env.example`; copia'l a `.env.local` per activar-les.
+No cal cap variable d'entorn: el build funciona sense configuració. Les opcionals (analítica de Plausible, mida de lot de les imatges OG, testimoni de la prova d'origen de WebMCP) estan documentades a `.env.example`; copia'l a `.env.local` per activar-les.
 
 ### Comprovacions de qualitat
 
@@ -77,7 +77,7 @@ scripts/                 Generadors executats pel prebuild
 
 ## SEO i descobriment per IA
 
-Cada pàgina publica metadata completa, alternatives hreflang, JSON-LD i una imatge OG generada en temps de build. El repositori també serveix `llms.txt`, `robots.txt` amb directives Content-Signal, un catàleg d'API RFC 9727 i una targeta de servidor MCP sota `.well-known/`.
+Cada pàgina publica metadata completa, alternatives hreflang, JSON-LD i una imatge OG generada en temps de build. El repositori també serveix `llms.txt`, `robots.txt` amb directives Content-Signal, un catàleg d'API RFC 9727 i una targeta de servidor MCP sota `.well-known/`. A més, cada pàgina registra quatre eines WebMCP de només lectura (cerca, lectura de seccions, llista d'accions i citació) per als assistents d'IA que funcionen dins del navegador del visitant; vegeu [2022.cat/mcp](https://2022.cat/mcp).
 
 ## Desplegament
 
@@ -90,6 +90,8 @@ El lloc de producció s'allotja darrere de Cloudflare. Els detalls de desplegame
 The website behind **[2022.cat](https://2022.cat)**: an explorable, trilingual edition of *"Catalunya 2022 - RESET: Call to reactivate Catalonia"*, the strategic plan written in 2021 by a 30-expert Catalan civil-society task force. It makes the document's 3 spheres, 12 goals, and 91 actions browsable and searchable in Catalan, English, and Spanish, with expert profiles and downloads.
 
 Built with Next.js 16 (App Router, React 19, 441 static pages), Tailwind CSS v4, shadcn/ui, next-intl v4 (native-language URL slugs per locale), next-mdx-remote, and flexsearch. Requires Node 22: `npm install && npm run dev`. The 64-hex `.txt` file in `public/` is the public [IndexNow](https://www.indexnow.org) ownership key, not a leaked secret.
+
+Every page also registers four read-only WebMCP tools (search, section reading, action listing and citation) for AI assistants running inside the visitor's browser; see [2022.cat/mcp](https://2022.cat/mcp).
 
 Development commands are language-neutral; see [Desenvolupament](#desenvolupament) above. Related repository: [MCP server](https://github.com/catalunya-2022/mcp).
 

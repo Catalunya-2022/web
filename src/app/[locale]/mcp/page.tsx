@@ -23,6 +23,13 @@ import {
   mcpClientConfigs,
   mcpExampleQuestions,
   mcpTechnicalDetails,
+  webmcpAvailability,
+  webmcpAvailabilityLead,
+  webmcpClosingText,
+  webmcpIntroText,
+  webmcpLearnMore,
+  webmcpLinks,
+  webmcpTools,
 } from "@/lib/data/mcp";
 import { ExternalLink } from "lucide-react";
 import { SectionHeader } from "@/components/content/section-header";
@@ -93,6 +100,21 @@ function CapabilitySection({
   );
 }
 
+function ExternalTextLink({ href, label, hint }: { href: string; label: string; hint: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group/link inline-flex items-baseline gap-0.5 text-primary underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
+    >
+      {label}
+      <ExternalLink className="relative top-[1px] size-3 opacity-0 transition-opacity group-hover/link:opacity-100" aria-hidden="true" />
+      <span className="sr-only"> {hint}</span>
+    </a>
+  );
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const l = await resolveRouteLocale(params);
   return supplementaryMetadata("/mcp", l);
@@ -119,6 +141,13 @@ export default async function McpPage({ params }: Props) {
           clients: mcpClientConfigs,
           exampleQuestions: mcpExampleQuestions[l],
           technical: mcpTechnicalDetails,
+          browser: {
+            intro: webmcpIntroText[l],
+            tools: webmcpTools,
+            availabilityLead: webmcpAvailabilityLead[l],
+            availability: webmcpAvailability.map((item) => item[l]),
+            closing: webmcpClosingText[l],
+          },
         },
         l,
       )}
@@ -136,16 +165,11 @@ export default async function McpPage({ params }: Props) {
         </p>
         <p className="text-[15px] leading-relaxed text-foreground/80">
           {mcpIntroLearnMore[l]}{" "}
-          <a
+          <ExternalTextLink
             href="https://modelcontextprotocol.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/link inline-flex items-baseline gap-0.5 text-primary underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
-          >
-            modelcontextprotocol.io
-            <ExternalLink className="relative top-[1px] size-3 opacity-0 transition-opacity group-hover/link:opacity-100" aria-hidden="true" />
-            <span className="sr-only"> {t.opensInNewTab}</span>
-          </a>
+            label="modelcontextprotocol.io"
+            hint={t.opensInNewTab}
+          />
         </p>
       </section>
 
@@ -219,6 +243,38 @@ export default async function McpPage({ params }: Props) {
             description: prompt.description[l],
           }))}
         />
+      </section>
+
+      <section className="mb-16">
+        <SectionHeader subtitle={sub.browser[l]} title={h.browser[l]} />
+        <p className="mb-6 text-[15px] leading-relaxed text-foreground/80">
+          {webmcpIntroText[l]}
+        </p>
+        <CapabilitySection
+          title={h.tools[l]}
+          valueLabel={labels.tool[l]}
+          descriptionLabel={labels.description[l]}
+          items={webmcpTools.map((tool) => ({
+            value: tool.name,
+            description: tool.description[l],
+          }))}
+        />
+        <p className="mt-6 mb-2 text-[15px] font-medium">{webmcpAvailabilityLead[l]}</p>
+        <ul className="mb-6 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed text-foreground/80">
+          {webmcpAvailability.map((item) => (
+            <li key={item.en}>{item[l]}</li>
+          ))}
+        </ul>
+        <p className="text-[15px] leading-relaxed text-foreground/80">
+          {webmcpClosingText[l]} {webmcpLearnMore[l]}{" "}
+          <ExternalTextLink
+            href={webmcpLinks.spec}
+            label="webmachinelearning.github.io/webmcp"
+            hint={t.opensInNewTab}
+          />
+          {" · "}
+          <ExternalTextLink href={webmcpLinks.chrome} label="developer.chrome.com" hint={t.opensInNewTab} />
+        </p>
       </section>
 
       <section className="mb-4">

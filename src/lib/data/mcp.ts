@@ -9,6 +9,7 @@ export const mcpSectionLabels = {
   capabilities: { ca: "Capacitats", en: "Capabilities", es: "Capacidades" } satisfies Trilingual<string>,
   technical: { ca: "Referència", en: "Reference", es: "Referencia" } satisfies Trilingual<string>,
   examples: { ca: "Exemples", en: "Examples", es: "Ejemplos" } satisfies Trilingual<string>,
+  browser: { ca: "Navegador", en: "Browser", es: "Navegador" } satisfies Trilingual<string>,
 };
 
 // --- Section headings ---
@@ -46,6 +47,11 @@ export const mcpSectionHeadings = {
     ca: "Detalls tècnics",
     en: "Technical Details",
     es: "Detalles técnicos",
+  } satisfies Trilingual<string>,
+  browser: {
+    ca: "Eines al navegador (WebMCP)",
+    en: "Tools in Your Browser (WebMCP)",
+    es: "Herramientas en el navegador (WebMCP)",
   } satisfies Trilingual<string>,
 };
 
@@ -228,6 +234,243 @@ export const mcpPrompts: McpPrompt[] = [
     },
   },
 ];
+
+// --- In-browser tools (WebMCP) ---
+
+export type WebMcpParamSpec = {
+  name: string;
+  type: "string" | "integer";
+  description: Trilingual<string>;
+  required?: boolean;
+  enum?: readonly string[];
+  minimum?: number;
+  maximum?: number;
+};
+
+export type WebMcpToolName =
+  | "search_document"
+  | "get_section"
+  | "list_proposals"
+  | "get_document_metadata";
+
+export type WebMcpToolSpec = {
+  name: WebMcpToolName;
+  title: Trilingual<string>;
+  description: Trilingual<string>;
+  params: WebMcpParamSpec[];
+};
+
+export const webmcpTools: WebMcpToolSpec[] = [
+  {
+    name: "search_document",
+    title: { ca: "Cerca al document", en: "Search the document", es: "Buscar en el documento" },
+    description: {
+      ca: "Cerca per paraules clau a tot el document Catalunya 2022: 3 àmbits, 12 objectius i 91 accions, més la introducció, el resum executiu i el tren de la prosperitat. Retorna fins a 8 resultats amb identificador, títol, ruta, URL i fragment, en la llengua d'aquesta pàgina. Per llegir una secció sencera, crida get_section amb el slug d'un resultat.",
+      en: "Keyword search across the whole Catalunya 2022 document: 3 spheres, 12 goals and 91 actions, plus the introduction, the executive summary and the train of prosperity. Returns up to 8 results with identifier, title, breadcrumb, URL and snippet, in this page's language. To read a whole section, call get_section with a result's slug.",
+      es: "Búsqueda por palabras clave en todo el documento Catalunya 2022: 3 ámbitos, 12 objetivos y 91 acciones, más la introducción, el resumen ejecutivo y el tren de la prosperidad. Devuelve hasta 8 resultados con identificador, título, ruta, URL y fragmento, en el idioma de esta página. Para leer una sección entera, llama a get_section con el slug de un resultado.",
+    },
+    params: [
+      {
+        name: "query",
+        type: "string",
+        required: true,
+        description: {
+          ca: "Termes de cerca en la llengua de la pàgina, fins a 100 caràcters. Exemples: habitatge, energia, formació professional.",
+          en: "Search terms in the page language, up to 100 characters. Examples: housing, energy, vocational training.",
+          es: "Términos de búsqueda en el idioma de la página, hasta 100 caracteres. Ejemplos: vivienda, energía, formación profesional.",
+        },
+      },
+      {
+        name: "scope",
+        type: "string",
+        enum: ["sphere", "goal", "action", "static"],
+        description: {
+          ca: "Tipus de secció: action (91 accions), goal (12 objectius), sphere (3 àmbits) o static (introducció, resum executiu, tren de la prosperitat).",
+          en: "Section type: action (91 actions), goal (12 goals), sphere (3 spheres) or static (introduction, executive summary, train of prosperity).",
+          es: "Tipo de sección: action (91 acciones), goal (12 objetivos), sphere (3 ámbitos) o static (introducción, resumen ejecutivo, tren de la prosperidad).",
+        },
+      },
+    ],
+  },
+  {
+    name: "get_section",
+    title: { ca: "Llegeix una secció", en: "Read a section", es: "Leer una sección" },
+    description: {
+      ca: "Retorna el text complet d'una secció del document en Markdown, amb títol i URL, en la llengua d'aquesta pàgina. Sense slug, retorna la pàgina que el lector té oberta. Accepta el slug canònic (per exemple sphere-1/goal-2/action-2-1 o introduction) o la ruta localitzada d'aquesta llengua. Cobreix les 109 seccions del document: introducció, resum executiu, tren de la prosperitat, 3 àmbits, 12 objectius i 91 accions.",
+      en: "Returns the full text of a document section as Markdown, with title and URL, in this page's language. Without a slug, returns the page the reader has open. Accepts the canonical slug (for example sphere-1/goal-2/action-2-1 or introduction) or this language's localized path. Covers the 109 document sections: introduction, executive summary, train of prosperity, 3 spheres, 12 goals and 91 actions.",
+      es: "Devuelve el texto completo de una sección del documento en Markdown, con título y URL, en el idioma de esta página. Sin slug, devuelve la página que el lector tiene abierta. Acepta el slug canónico (por ejemplo sphere-1/goal-2/action-2-1 o introduction) o la ruta localizada de este idioma. Cubre las 109 secciones del documento: introducción, resumen ejecutivo, tren de la prosperidad, 3 ámbitos, 12 objetivos y 91 acciones.",
+    },
+    params: [
+      {
+        name: "slug",
+        type: "string",
+        description: {
+          ca: "Slug canònic o ruta localitzada de la secció. Deixa-ho buit per llegir la pàgina actual.",
+          en: "Canonical slug or localized path of the section. Leave empty to read the current page.",
+          es: "Slug canónico o ruta localizada de la sección. Déjalo vacío para leer la página actual.",
+        },
+      },
+    ],
+  },
+  {
+    name: "list_proposals",
+    title: { ca: "Llista les accions", en: "List the actions", es: "Listar las acciones" },
+    description: {
+      ca: "Llista les 91 accions del pla en ordre numèric, amb identificador, títol, slug i URL, en la llengua d'aquesta pàgina. Filtra per àmbit (sphereId d'1 a 3) o per objectiu (goalId d'1 a 12); sense filtre retorna les 91 accions. Quan sigui possible, filtra per objectiu per obtenir una resposta curta.",
+      en: "Lists the plan's 91 actions in numeric order, with identifier, title, slug and URL, in this page's language. Filter by sphere (sphereId 1 to 3) or by goal (goalId 1 to 12); with no filter it returns all 91 actions. When possible, filter by goal to keep the answer short.",
+      es: "Lista las 91 acciones del plan en orden numérico, con identificador, título, slug y URL, en el idioma de esta página. Filtra por ámbito (sphereId de 1 a 3) o por objetivo (goalId de 1 a 12); sin filtro devuelve las 91 acciones. Cuando sea posible, filtra por objetivo para obtener una respuesta corta.",
+    },
+    params: [
+      {
+        name: "sphereId",
+        type: "integer",
+        minimum: 1,
+        maximum: 3,
+        description: {
+          ca: "Número d'àmbit, d'1 a 3 (1 societat, 2 economia, 3 sector públic).",
+          en: "Sphere number, 1 to 3 (1 society, 2 economy, 3 public sector).",
+          es: "Número de ámbito, de 1 a 3 (1 sociedad, 2 economía, 3 sector público).",
+        },
+      },
+      {
+        name: "goalId",
+        type: "integer",
+        minimum: 1,
+        maximum: 12,
+        description: {
+          ca: "Número d'objectiu, d'1 a 12 (d'1 a 4 àmbit 1, de 5 a 8 àmbit 2, de 9 a 12 àmbit 3).",
+          en: "Goal number, 1 to 12 (1 to 4 in sphere 1, 5 to 8 in sphere 2, 9 to 12 in sphere 3).",
+          es: "Número de objetivo, de 1 a 12 (de 1 a 4 ámbito 1, de 5 a 8 ámbito 2, de 9 a 12 ámbito 3).",
+        },
+      },
+    ],
+  },
+  {
+    name: "get_document_metadata",
+    title: { ca: "Estructura i citació", en: "Structure and citation", es: "Estructura y cita" },
+    description: {
+      ca: "Retorna la fitxa del document en la llengua d'aquesta pàgina: títol complet, autor, any, DOI i text de citació; els 3 àmbits i 12 objectius amb el nombre d'accions i les URL; les descàrregues en PDF, EPUB i Markdown; i l'endpoint del servidor MCP. Punt de partida recomanat i font de la citació correcta.",
+      en: "Returns the document's record in this page's language: full title, author, year, DOI and citation text; the 3 spheres and 12 goals with action counts and URLs; the PDF, EPUB and Markdown downloads; and the MCP server endpoint. Recommended starting point and the source of the correct citation.",
+      es: "Devuelve la ficha del documento en el idioma de esta página: título completo, autor, año, DOI y texto de cita; los 3 ámbitos y 12 objetivos con el número de acciones y las URL; las descargas en PDF, EPUB y Markdown; y el endpoint del servidor MCP. Punto de partida recomendado y fuente de la cita correcta.",
+    },
+    params: [],
+  },
+];
+
+export const webmcpMessages = {
+  emptyQuery: {
+    ca: "Indica un terme de cerca. Per navegar sense cercar, fes servir list_proposals.",
+    en: "Provide a search term. To browse without searching, use list_proposals.",
+    es: "Indica un término de búsqueda. Para navegar sin buscar, usa list_proposals.",
+  },
+  noResults: {
+    ca: "Cap resultat per a {query}. Prova altres paraules en la llengua de la pàgina o fes servir list_proposals per veure totes les accions.",
+    en: "No results for {query}. Try other words in the page language or use list_proposals to browse all actions.",
+    es: "Ningún resultado para {query}. Prueba otras palabras en el idioma de la página o usa list_proposals para ver todas las acciones.",
+  },
+  invalidScope: {
+    ca: "El filtre {scope} no és vàlid. Fes servir un d'aquests: {scopes}.",
+    en: "Unknown scope {scope}. Use one of: {scopes}.",
+    es: "El filtro {scope} no es válido. Usa uno de estos: {scopes}.",
+  },
+  indexUnavailable: {
+    ca: "L'índex de cerca no està disponible ara mateix. Torna-ho a provar d'aquí a uns segons.",
+    en: "The search index is not available right now. Try again in a few seconds.",
+    es: "El índice de búsqueda no está disponible ahora mismo. Vuelve a intentarlo en unos segundos.",
+  },
+  noCurrentPage: {
+    ca: "Aquesta pàgina no té cap secció del document associada. Indica un slug, per exemple introduction o sphere-1/goal-1/action-1-1.",
+    en: "This page has no document section attached. Provide a slug, for example introduction or sphere-1/goal-1/action-1-1.",
+    es: "Esta página no tiene ninguna sección del documento asociada. Indica un slug, por ejemplo introduction o sphere-1/goal-1/action-1-1.",
+  },
+  notReadable: {
+    ca: "{slug} no és una secció del document. Només són llegibles les 109 seccions: introducció, resum executiu, tren de la prosperitat, àmbits, objectius i accions. Aquesta pàgina és a {url}.",
+    en: "{slug} is not a document section. Only the 109 sections are readable: introduction, executive summary, train of prosperity, spheres, goals and actions. That page lives at {url}.",
+    es: "{slug} no es una sección del documento. Solo son legibles las 109 secciones: introducción, resumen ejecutivo, tren de la prosperidad, ámbitos, objetivos y acciones. Esa página está en {url}.",
+  },
+  unknownSlug: {
+    ca: "No es reconeix {slug}. Fes servir un slug canònic (per exemple sphere-2/goal-6/action-6-1) o un slug retornat per search_document o list_proposals.",
+    en: "{slug} is not recognised. Use a canonical slug (for example sphere-2/goal-6/action-6-1) or a slug returned by search_document or list_proposals.",
+    es: "No se reconoce {slug}. Usa un slug canónico (por ejemplo sphere-2/goal-6/action-6-1) o un slug devuelto por search_document o list_proposals.",
+  },
+  mirrorUnavailable: {
+    ca: "No s'ha pogut carregar el text de la secció. Torna-ho a provar o llegeix-la a {url}.",
+    en: "The section text could not be loaded. Try again or read it at {url}.",
+    es: "No se ha podido cargar el texto de la sección. Vuelve a intentarlo o léela en {url}.",
+  },
+  truncated: {
+    ca: "Text truncat. El text complet és a {url}.",
+    en: "Text truncated. The full text is at {url}.",
+    es: "Texto truncado. El texto completo está en {url}.",
+  },
+  invalidSphere: {
+    ca: "sphereId ha de ser un nombre enter d'1 a 3.",
+    en: "sphereId must be an integer from 1 to 3.",
+    es: "sphereId debe ser un número entero de 1 a 3.",
+  },
+  invalidGoal: {
+    ca: "goalId ha de ser un nombre enter d'1 a 12.",
+    en: "goalId must be an integer from 1 to 12.",
+    es: "goalId debe ser un número entero de 1 a 12.",
+  },
+  goalNotInSphere: {
+    ca: "L'objectiu {goalId} no pertany a l'àmbit {sphereId}. L'àmbit {sphereId} conté els objectius {goals}.",
+    en: "Goal {goalId} does not belong to sphere {sphereId}. Sphere {sphereId} contains goals {goals}.",
+    es: "El objetivo {goalId} no pertenece al ámbito {sphereId}. El ámbito {sphereId} contiene los objetivos {goals}.",
+  },
+  contentLanguage: {
+    ca: "Llengua del contingut: català",
+    en: "Content language: English",
+    es: "Idioma del contenido: castellano",
+  },
+} satisfies Record<string, Trilingual<string>>;
+
+export const webmcpIntroText = {
+  ca: "WebMCP és una proposta d'estàndard web del W3C perquè una pàgina ofereixi eines als assistents d'IA que funcionen dins del navegador del visitant. Cada pàgina de 2022.cat registra quatre eines de només lectura: l'assistent pot cercar al document, llegir seccions, llistar accions i citar-lo correctament sense sortir de la pàgina.",
+  en: "WebMCP is a proposed W3C web standard that lets a page offer tools to AI assistants running inside the visitor's browser. Every page of 2022.cat registers four read-only tools, so an assistant can search the document, read sections, list actions and cite it correctly without leaving the page.",
+  es: "WebMCP es una propuesta de estándar web del W3C para que una página ofrezca herramientas a los asistentes de IA que funcionan dentro del navegador del visitante. Cada página de 2022.cat registra cuatro herramientas de solo lectura: el asistente puede buscar en el documento, leer secciones, listar acciones y citarlo correctamente sin salir de la página.",
+} satisfies Trilingual<string>;
+
+export const webmcpAvailabilityLead = {
+  ca: "On funciona avui",
+  en: "Where it works today",
+  es: "Dónde funciona hoy",
+} satisfies Trilingual<string>;
+
+export const webmcpAvailability: Trilingual<string>[] = [
+  {
+    ca: "El navegador integrat de l'aplicació d'escriptori de ChatGPT i Codex (eines de lloc web).",
+    en: "The built-in browser of the ChatGPT desktop app, and Codex (site tools).",
+    es: "El navegador integrado de la aplicación de escritorio de ChatGPT y Codex (herramientas de sitio).",
+  },
+  {
+    ca: "Chrome estable durant la prova d'origen de WebMCP (Chrome 149 a 156), o qualsevol Chromium amb l'opció enable-webmcp-testing activada.",
+    en: "Stable Chrome during the WebMCP origin trial (Chrome 149 to 156), or any Chromium with the enable-webmcp-testing flag on.",
+    es: "Chrome estable durante la prueba de origen de WebMCP (Chrome 149 a 156), o cualquier Chromium con la opción enable-webmcp-testing activada.",
+  },
+  {
+    ca: "Per inspeccionar-les: DevTools de Chrome, pestanya Application, panell WebMCP.",
+    en: "To inspect them: Chrome DevTools, Application tab, WebMCP panel.",
+    es: "Para inspeccionarlas: DevTools de Chrome, pestaña Application, panel WebMCP.",
+  },
+];
+
+export const webmcpClosingText = {
+  ca: "Les eines tenen els mateixos noms i paràmetres que les del servidor MCP, sense el paràmetre locale: segueixen la llengua de la pàgina on és el lector.",
+  en: "The tools carry the same names and parameters as the MCP server's, minus the locale parameter: they follow the language of the page the reader is on.",
+  es: "Las herramientas tienen los mismos nombres y parámetros que las del servidor MCP, sin el parámetro locale: siguen el idioma de la página en la que está el lector.",
+} satisfies Trilingual<string>;
+
+export const webmcpLearnMore = {
+  ca: "Per saber-ne més:",
+  en: "To learn more:",
+  es: "Para saber más:",
+} satisfies Trilingual<string>;
+
+export const webmcpLinks = {
+  spec: "https://webmachinelearning.github.io/webmcp/",
+  chrome: "https://developer.chrome.com/docs/ai/webmcp",
+};
 
 // --- Client configs ---
 
@@ -456,6 +699,8 @@ export const mcpExampleQuestions: Trilingual<string[]> = {
 };
 
 // --- Technical details ---
+
+export const mcpServerUrl = "https://mcp.2022.cat";
 
 export const mcpTechnicalDetails = {
   protocol: "MCP (Model Context Protocol) over Streamable HTTP",
