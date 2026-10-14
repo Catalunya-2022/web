@@ -3,7 +3,6 @@ import { OrgTable } from "@/components/content/org-table";
 import { SupplementaryPageShell } from "@/components/content/supplementary-page-shell";
 import { organizations } from "@/lib/data/organizations";
 import { generateOrganizationsText } from "@/lib/copy-text-generators";
-import { normalizeForSearch } from "@/lib/search-normalization";
 import { supplementaryMetadata } from "@/lib/metadata";
 import { resolveRouteLocale, setResolvedRequestLocale } from "@/lib/route-locale";
 
@@ -26,7 +25,6 @@ export default async function OrganizationsPage({ params }: Props) {
       <OrgTable
         organizations={organizations.map((org) => ({
           name: org.name[l],
-          normalizedName: normalizeForSearch(org.name[l]),
           website: org.website,
         }))}
         locale={l}

@@ -23,8 +23,10 @@ describe("content article route (drives metadata for all content pages)", () => 
   it("builds canonical, hreflang and OG metadata from real content", async () => {
     const metadata = await generateContentArticleMetadata("/introduction", "en");
 
-    expect(metadata.title).toBeTruthy();
-    expect(metadata.description).toBeTruthy();
+    expect(typeof metadata.title).toBe("string");
+    expect((metadata.title as string).length).toBeGreaterThan(3);
+    expect(typeof metadata.description).toBe("string");
+    expect((metadata.description as string).length).toBeGreaterThan(20);
 
     const alternates = metadata.alternates!;
     expect(alternates.canonical).toBe("https://2022.cat/en/introduction");

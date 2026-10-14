@@ -6,7 +6,7 @@ import {
 
 type ContentPageMetaSource = {
   identifier: string;
-  subtitle: string | null;
+  subtitle: string;
   body: string;
 };
 
@@ -38,10 +38,7 @@ export function getContentPageMetadata(content: ContentPageMetaSource): {
   title: string;
   description: string | undefined;
 } {
-  const subtitle =
-    content.subtitle === null ? null : stripMarkdownFormatting(content.subtitle);
-  const id = titleCaseIdentifier(content.identifier);
-  const title = subtitle ? `${id}: ${subtitle}` : id;
+  const title = `${titleCaseIdentifier(content.identifier)}: ${stripMarkdownFormatting(content.subtitle)}`;
 
   const paragraph = firstParagraph(content.body);
   const description = paragraph

@@ -36,13 +36,7 @@ export async function ContentPage({
     <>
       <CopyPageSetter title={pageTitle} slug={slug} rawContent={content.raw} locale={locale} citable />
       <PrintHeader locale={locale} />
-      <PageActionBar
-        slug={slug}
-        locale={locale}
-        title={pageTitle}
-        rawContent={content.raw}
-        citable
-      />
+      <PageActionBar slug={slug} locale={locale} citable />
 
       <PageHeader subtitle={content.identifier} title={pageTitle} />
 

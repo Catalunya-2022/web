@@ -61,7 +61,7 @@ export default function GlobalError({
           <p className="brand">Catalunya 2022</p>
           <h1>Alguna cosa no ha anat b&eacute;</h1>
           <p className="alt">Something went wrong &middot; Algo no ha ido bien</p>
-          <button onClick={reset}>Torna-ho a provar / Try again</button>
+          <button onClick={reset}>Torneu-ho a provar / Try again</button>
         </main>
       </body>
     </html>

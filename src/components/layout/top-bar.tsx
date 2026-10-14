@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -25,6 +25,17 @@ export function TopBar({ locale }: { locale: Locale }) {
   const t = uiStrings[locale];
   const [searchOpen, setSearchOpen] = useState(false);
   const [isMac, setIsMac] = useState<boolean | null>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (searchOpen) returnFocusRef.current = document.activeElement as HTMLElement | null;
+  }, [searchOpen]);
+
+  const restoreFocus = useCallback((event: Event) => {
+    event.preventDefault();
+    const target = returnFocusRef.current;
+    if (target?.isConnected) target.focus();
+  }, []);
 
   useEffect(() => {
     const id = requestAnimationFrame(() =>
@@ -84,7 +95,12 @@ export function TopBar({ locale }: { locale: Locale }) {
         </button>
       </header>
 
-      <SearchDialog locale={locale} open={searchOpen} onOpenChange={setSearchOpen} />
+      <SearchDialog
+        locale={locale}
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        onCloseAutoFocus={restoreFocus}
+      />
     </>
   );
 }

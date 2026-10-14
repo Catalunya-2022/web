@@ -6,6 +6,7 @@ import {
   buildReadingOrder,
   getSupplementaryPageCopy,
 } from "../page-registry";
+import { EXPECTED_COUNTS } from "@/test/contract";
 
 describe("page-registry", () => {
   it("builds the full reading order from a single shared registry", () => {
@@ -19,7 +20,7 @@ describe("page-registry", () => {
       "/action-plan",
     ]);
     expect(readingOrder.at(-1)).toBe("/mcp");
-    expect(readingOrder).toHaveLength(117);
+    expect(readingOrder).toHaveLength(EXPECTED_COUNTS.readingOrder);
   });
 
   it("builds only MDX-backed content slugs for content loaders", () => {
@@ -27,7 +28,7 @@ describe("page-registry", () => {
 
     expect(contentSlugs[0]).toBe("/introduction");
     expect(contentSlugs).toContain("/sphere-3/goal-12/action-12-5");
-    expect(contentSlugs).toHaveLength(109);
+    expect(contentSlugs).toHaveLength(EXPECTED_COUNTS.contentFiles);
   });
 
   it("keeps the static and supplementary route registries explicit", () => {
@@ -51,7 +52,7 @@ describe("page-registry", () => {
     expect(getSupplementaryPageCopy("/action-plan", "en")).toEqual(
       expect.objectContaining({
         identifier: "Action Plan",
-        title: "Reset: Call to reactivate Catalonia",
+        title: "RESET: Call to reactivate Catalonia",
         pageTitle: "Action Plan",
       })
     );

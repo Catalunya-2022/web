@@ -13,25 +13,21 @@ import {
   CopyPageMenuContent,
   useCopyPageActions,
 } from "@/components/content/copy-page-menu";
+import { useCopyPageData } from "@/components/content/copy-page-context";
 import type { Locale } from "@/i18n/routing";
 
 export function CopyPageDropdown({
-  title,
-  slug,
-  rawContent,
   locale,
   citable = false,
 }: {
-  title: string;
-  slug: string;
-  rawContent: string;
   locale: Locale;
   citable?: boolean;
 }) {
+  const { data } = useCopyPageData();
   const t = uiStrings[locale];
   const payload = useMemo(
-    () => buildCopyPagePayload({ title, slug, rawContent, locale, citable }),
-    [title, slug, rawContent, locale, citable]
+    () => (data ? buildCopyPagePayload(data) : null),
+    [data]
   );
   const {
     copyState,
@@ -41,7 +37,7 @@ export function CopyPageDropdown({
     handleCopyCitation,
     handleShareOrCopyLink,
     handlePrint,
-  } = useCopyPageActions(payload, title, locale);
+  } = useCopyPageActions(payload, data?.title ?? "", locale);
 
   const label =
     copyState === "copying"
@@ -70,19 +66,24 @@ export function CopyPageDropdown({
               <ChevronDown className="size-3.5" />
             </button>
           </DropdownMenuTrigger>
-          <CopyPageMenuContent
-            locale={locale}
-            citable={citable}
-            canShare={canShare}
-            chatgptHref={payload.chatgptHref}
-            claudeHref={payload.claudeHref}
-            onCopy={handleCopy}
-            onCopyCitation={handleCopyCitation}
-            onShareOrCopyLink={handleShareOrCopyLink}
-            onPrint={handlePrint}
-          />
+          {payload && (
+            <CopyPageMenuContent
+              locale={locale}
+              citable={citable}
+              canShare={canShare}
+              chatgptHref={payload.chatgptHref}
+              claudeHref={payload.claudeHref}
+              onCopy={handleCopy}
+              onCopyCitation={handleCopyCitation}
+              onShareOrCopyLink={handleShareOrCopyLink}
+              onPrint={handlePrint}
+            />
+          )}
         </DropdownMenu>
       </div>
+      <span role="status" aria-live="polite" className="sr-only">
+        {copyState === "copied" ? copiedMessage : ""}
+      </span>
     </div>
   );
 }

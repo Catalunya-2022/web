@@ -32,7 +32,17 @@ describe("llms.txt curated index", () => {
       index.indexOf("## Documents Canònics")
     );
     expect(index).toContain("https://2022.cat/ambit-1/objectiu-2");
-    expect(index).toContain("## Política lingüística");
+    expect(index).toContain("## Política Lingüística");
+  });
+
+  it.each(routing.locales)("lists every URL once (%s)", async (locale) => {
+    const index = buildCuratedIndex(locale, await collectLocaleData(locale));
+    const urls = [...index.matchAll(/\]\((https?:\/\/[^)]+)\)/g)].map((m) => m[1]);
+
+    expect(new Set(urls).size).toBe(urls.length);
+    expect(urls).toContain("https://2022.cat/llms.txt");
+    expect(urls).toContain("https://2022.cat/llms-full.txt");
+    expect(urls).toContain("https://mcp.2022.cat");
   });
 
   it("localizes hierarchy links per locale", async () => {

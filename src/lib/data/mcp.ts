@@ -1,6 +1,6 @@
 import type { Trilingual } from "@/i18n/routing";
 
-// --- Section labels (red uppercase subtitles — matches Resources/Press pattern) ---
+// --- Section labels (red uppercase subtitles, matches the Resources and Press pattern) ---
 
 export const mcpSectionLabels = {
   intro: { ca: "Protocol", en: "Protocol", es: "Protocolo" } satisfies Trilingual<string>,
@@ -39,7 +39,7 @@ export const mcpSectionHeadings = {
     es: "Cómo conectarse",
   } satisfies Trilingual<string>,
   examples: {
-    ca: "Què pots preguntar?",
+    ca: "Què podeu preguntar?",
     en: "What Can You Ask?",
     es: "¿Qué puedes preguntar?",
   } satisfies Trilingual<string>,
@@ -390,7 +390,7 @@ export const webmcpMessages = {
   },
   unknownSlug: {
     ca: "No es reconeix {slug}. Fes servir un slug canònic (per exemple sphere-2/goal-6/action-6-1) o un slug retornat per search_document o list_proposals.",
-    en: "{slug} is not recognised. Use a canonical slug (for example sphere-2/goal-6/action-6-1) or a slug returned by search_document or list_proposals.",
+    en: "{slug} is not recognized. Use a canonical slug (for example sphere-2/goal-6/action-6-1) or a slug returned by search_document or list_proposals.",
     es: "No se reconoce {slug}. Usa un slug canónico (por ejemplo sphere-2/goal-6/action-6-1) o un slug devuelto por search_document o list_proposals.",
   },
   mirrorUnavailable: {
@@ -418,11 +418,6 @@ export const webmcpMessages = {
     en: "Goal {goalId} does not belong to sphere {sphereId}. Sphere {sphereId} contains goals {goals}.",
     es: "El objetivo {goalId} no pertenece al ámbito {sphereId}. El ámbito {sphereId} contiene los objetivos {goals}.",
   },
-  contentLanguage: {
-    ca: "Llengua del contingut: català",
-    en: "Content language: English",
-    es: "Idioma del contenido: castellano",
-  },
 } satisfies Record<string, Trilingual<string>>;
 
 export const webmcpIntroText = {
@@ -439,14 +434,19 @@ export const webmcpAvailabilityLead = {
 
 export const webmcpAvailability: Trilingual<string>[] = [
   {
-    ca: "El navegador integrat de l'aplicació d'escriptori de ChatGPT i Codex (eines de lloc web).",
-    en: "The built-in browser of the ChatGPT desktop app, and Codex (site tools).",
-    es: "El navegador integrado de la aplicación de escritorio de ChatGPT y Codex (herramientas de sitio).",
+    ca: "El navegador integrat de l'aplicació d'escriptori de ChatGPT i de ChatGPT Work, i Codex (eines de lloc web).",
+    en: "The built-in browser of the ChatGPT desktop app and ChatGPT Work, and Codex (site tools).",
+    es: "El navegador integrado de la aplicación de escritorio de ChatGPT y de ChatGPT Work, y Codex (herramientas de sitio).",
   },
   {
-    ca: "Chrome estable durant la prova d'origen de WebMCP (Chrome 149 a 156), o qualsevol Chromium amb l'opció enable-webmcp-testing activada.",
-    en: "Stable Chrome during the WebMCP origin trial (Chrome 149 to 156), or any Chromium with the enable-webmcp-testing flag on.",
-    es: "Chrome estable durante la prueba de origen de WebMCP (Chrome 149 a 156), o cualquier Chromium con la opción enable-webmcp-testing activada.",
+    ca: "Chrome estable durant la prova d'origen de WebMCP (Chrome 149 a 162), o qualsevol Chromium amb l'opció enable-webmcp-testing activada.",
+    en: "Stable Chrome during the WebMCP origin trial (Chrome 149 to 162), or any Chromium with the enable-webmcp-testing flag on.",
+    es: "Chrome estable durante la prueba de origen de WebMCP (Chrome 149 a 162), o cualquier Chromium con la opción enable-webmcp-testing activada.",
+  },
+  {
+    ca: "Agents de programació que controlen Chromium amb Playwright (Playwright MCP exposa les eines de la pàgina com a webmcp_<nom>).",
+    en: "Coding agents driving Chromium through Playwright (Playwright MCP exposes the page tools as webmcp_<name>).",
+    es: "Agentes de programación que controlan Chromium con Playwright (Playwright MCP expone las herramientas de la página como webmcp_<nombre>).",
   },
   {
     ca: "Per inspeccionar-les: DevTools de Chrome, pestanya Application, panell WebMCP.",

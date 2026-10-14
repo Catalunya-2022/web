@@ -22,6 +22,7 @@ import {
   mcpPrompts,
   mcpClientConfigs,
   mcpExampleQuestions,
+  mcpServerUrl,
   mcpTechnicalDetails,
   webmcpAvailability,
   webmcpAvailabilityLead,
@@ -155,7 +156,7 @@ export default async function McpPage({ params }: Props) {
       <JsonLd data={softwareApplicationSchema({
         name: t.mcpTitle,
         description: t.mcpDescription,
-        url: "https://mcp.2022.cat",
+        url: mcpServerUrl,
         locale: l,
       })} />
       <section className="mb-16">
@@ -180,8 +181,8 @@ export default async function McpPage({ params }: Props) {
         </p>
 
         <div className="relative mx-auto my-8 w-fit rounded-lg border p-5 pr-12 transition-colors hover:border-primary/30 hover:bg-accent">
-          <code className="text-sm font-medium">https://mcp.2022.cat</code>
-          <CopyButton text="https://mcp.2022.cat" label={t.mcpCopyCommand} copiedLabel={t.copied} fullArea />
+          <code className="text-sm font-medium">{mcpServerUrl}</code>
+          <CopyButton text={mcpServerUrl} label={t.mcpCopyCommand} copiedLabel={t.copied} fullArea />
         </div>
       </section>
 

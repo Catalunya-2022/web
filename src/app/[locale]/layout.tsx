@@ -3,26 +3,13 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Inter, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { OrientationTracker } from "@/components/content/orientation-card";
-import { assertValidLocale } from "@/lib/content-utils";
+import { inter, outfit } from "@/lib/fonts";
 import { resolveRouteLocale } from "@/lib/route-locale";
 import { uiStrings } from "@/lib/ui-strings";
 import { routing } from "@/i18n/routing";
-
-const inter = Inter({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const outfit = Outfit({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-outfit",
-});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -54,11 +41,9 @@ type Props = {
 
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
-  // Deliberately bypasses route-locale helpers: hasLocale() must guard before assertValidLocale().
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
-  assertValidLocale(locale);
 
   setRequestLocale(locale);
 

@@ -64,7 +64,7 @@ describe("getNavigation", () => {
     const nav = await getNavigation("ca");
 
     expect(findNavItemInSections(nav, "/sphere-2/goal-7")?.title).toBe(
-      "Objectiu 7: Coneixement i Explotació"
+      "Objectiu 7: Coneixement"
     );
   });
 

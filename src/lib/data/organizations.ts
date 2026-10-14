@@ -871,7 +871,7 @@ export const organizations: Organization[] = [
     website: "https://web.ub.edu/"
   },
   {
-    name: { ca: "Universitat de Barcelona — Grup CETT", es: "Universidad de Barcelona — Grupo CETT", en: "University of Barcelona — CETT Group" },
+    name: { ca: "Universitat de Barcelona (Grup CETT)", es: "Universidad de Barcelona (Grupo CETT)", en: "University of Barcelona (CETT Group)" },
     website: "https://www.cett.es/"
   },
   {

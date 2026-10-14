@@ -63,6 +63,7 @@ export function LanguageSwitcher({ currentLocale }: { currentLocale: Locale }) {
               onClick={() => handleSwitch(code)}
               className="flex items-center justify-between text-sm"
               lang={code}
+              aria-current={isActive ? "true" : undefined}
             >
               <span>{label}</span>
               {isActive && <Check className="size-3.5 text-primary" />}

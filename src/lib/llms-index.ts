@@ -14,6 +14,7 @@ import {
   slugToFilePath,
 } from "@/lib/content-utils";
 import { BASE_URL, buildAbsoluteUrl } from "@/lib/metadata";
+import { documentDownloadPath, documentDownloadUrl } from "@/lib/document-downloads";
 import { getSphereIds } from "@/lib/page-registry";
 import {
   buildCanonicalGoalPath,
@@ -68,7 +69,6 @@ type LocaleConfig = {
     englishFull?: string;
     spanishMirror?: string;
     spanishFull?: string;
-    mcpServer: string;
     mcpInstructions: string;
   };
   mcpInstructionsTitle: string;
@@ -130,7 +130,7 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
     headings: {
       canonical: "Documents Canònics",
       core: "Documents Principals",
-      language: "Política lingüística",
+      language: "Política Lingüística",
       whenToUse: "Quan utilitzar aquest lloc",
       spheres: "Àmbits",
       goals: "Objectius",
@@ -157,7 +157,7 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
     descriptions: {
       curated: "Índex curt per a sistemes d'IA.",
       fullContext: "Context complet en català per a sistemes d'IA.",
-      fullMarkdown: "Document complet en Markdown.",
+      fullMarkdown: "Còpia en text pla per a lectura automàtica.",
       fullPdf: "Edició maquetada de referència.",
       fullEpub: "Edició EPUB del document complet.",
       introduction:
@@ -182,10 +182,8 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
         "Mirall curat en castellà amb la mateixa numeració que l'original català.",
       spanishFull: "Context complet en castellà per a sistemes d'IA.",
       catalanMarkdown: "Document complet canònic en català.",
-      mcpServer:
-        "Servidor MCP per connectar assistents d'IA (Claude, ChatGPT, Cursor) al contingut de Catalunya 2022. Protocol obert, sense autenticació.",
       mcpInstructions:
-        "Com connectar el teu client d'IA al servidor MCP de Catalunya 2022.",
+        "Com connectar el vostre client d'IA al servidor MCP de Catalunya 2022.",
     },
     mcpInstructionsTitle: "Instruccions MCP",
     fullMarkdownTitle: "Document complet en Markdown",
@@ -195,7 +193,7 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
   },
   en: {
     summary:
-      "Strategic plan created by the Catalunya 2022 task force to reactivate Catalonia. 3 spheres of transformation, 12 goals, and 91 concrete actions across society, economy, and the public sector.",
+      "Strategic plan created by the Catalunya 2022 Task Force to reactivate Catalonia. 3 spheres of transformation, 12 goals, and 91 concrete actions across society, economy, and the public sector.",
     canonicalNote:
       "Catalan is the original and canonical source language. The English and Spanish editions are translated mirrors with identical sphere, goal, and action numbering. If wording or interpretation diverges, use the Catalan version as the canonical basis.",
     headings: {
@@ -232,7 +230,7 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
       fullPdf: "Reference laid-out PDF edition.",
       fullEpub: "EPUB edition of the full document.",
       introduction:
-        "Context, mandate, and working method of the Catalunya 2022 task force.",
+        "Context, mandate, and working method of the Catalunya 2022 Task Force.",
       executiveSummary: "Summary of the 3 spheres, 12 goals, and 91 actions.",
       train: "Conceptual framework and transformation vision behind the plan.",
       actionPlan: "Interactive index of all spheres, goals, and actions.",
@@ -251,8 +249,6 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
       spanishMirror:
         "Spanish curated mirror with the same numbering as the Catalan original.",
       spanishFull: "Full Spanish context for AI systems.",
-      mcpServer:
-        "MCP server to connect AI assistants (Claude, ChatGPT, Cursor) to the Catalunya 2022 content. Open protocol, no authentication.",
       mcpInstructions:
         "How to connect your AI client to the Catalunya 2022 MCP server.",
     },
@@ -270,7 +266,7 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
     headings: {
       canonical: "Fuente Canónica",
       core: "Documentos Principales",
-      language: "Política lingüística",
+      language: "Política Lingüística",
       whenToUse: "Cuándo utilizar este sitio",
       spheres: "Ámbitos",
       goals: "Objetivos",
@@ -318,12 +314,10 @@ const LOCALE_CONFIG: Record<Locale, LocaleConfig> = {
       catalanMirror:
         "Índice canónico en catalán para el texto fuente original.",
       catalanFull: "Contexto completo en catalán para sistemas de IA.",
-      catalanMarkdown: "Documento completo canónico en catalán Markdown.",
+      catalanMarkdown: "Documento completo canónico en catalán, en Markdown.",
       englishMirror:
         "Espejo curado en inglés con la misma numeración que el original catalán.",
       englishFull: "Contexto completo en inglés para sistemas de IA.",
-      mcpServer:
-        "Servidor MCP para conectar asistentes de IA (Claude, ChatGPT, Cursor) al contenido de Catalunya 2022. Protocolo abierto, sin autenticación.",
       mcpInstructions:
         "Cómo conectar tu cliente de IA al servidor MCP de Catalunya 2022.",
     },
@@ -372,14 +366,7 @@ export function buildLlmsPath(
 }
 
 export function buildFullDocumentSource(locale: Locale): string {
-  return `documents/catalunya-2022-${locale}.md`;
-}
-
-function buildDocumentDownloadUrl(
-  locale: Locale,
-  format: "pdf" | "epub"
-): string {
-  return makeAbsoluteUrl(`/documents/catalunya-2022-${locale}.${format}`);
+  return documentDownloadPath(locale, "md").slice(1);
 }
 
 function countSphereActions(goalIds: readonly GoalId[]): number {
@@ -471,7 +458,9 @@ function buildCoreDocumentsSection(
   return [
     `## ${config.headings.core}`,
     "",
-    `- [${config.localeMirrorLabel}](${makeAbsoluteUrl(`/${buildLlmsPath(locale, "full")}`)}): ${config.descriptions.fullContext}`,
+    ...(locale === "ca"
+      ? []
+      : [`- [${config.localeMirrorLabel}](${makeAbsoluteUrl(`/${buildLlmsPath(locale, "full")}`)}): ${config.descriptions.fullContext}`]),
     `- [${localeData.intro.h1}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.introduction)}): ${config.descriptions.introduction}`,
     `- [${localeData.executiveSummary.h1}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.executiveSummary)}): ${config.descriptions.executiveSummary}`,
     `- [${localeData.trainOfProsperity.h1}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.trainOfProsperity)}): ${config.descriptions.train}`,
@@ -524,8 +513,8 @@ function buildDownloadsSection(locale: Locale): string {
     `## ${config.headings.downloads}`,
     "",
     `- [${config.fullMarkdownTitle}](${makeAbsoluteUrl(`/${buildFullDocumentSource(locale)}`)}): ${config.descriptions.fullMarkdown}`,
-    `- [${config.fullPdfTitle}](${buildDocumentDownloadUrl(locale, "pdf")}): ${config.descriptions.fullPdf}`,
-    `- [${config.fullEpubTitle}](${buildDocumentDownloadUrl(locale, "epub")}): ${config.descriptions.fullEpub}`,
+    `- [${config.fullPdfTitle}](${documentDownloadUrl(locale, "pdf")}): ${config.descriptions.fullPdf}`,
+    `- [${config.fullEpubTitle}](${documentDownloadUrl(locale, "epub")}): ${config.descriptions.fullEpub}`,
     "",
   ].join("\n");
 }
@@ -540,30 +529,19 @@ function buildOptionalSection(locale: Locale): string {
     `- [${ui.organizationsTitle}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.organizations)}): ${config.descriptions.organizations}`,
     `- [${ui.peopleConsultedTitle}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.peopleConsulted)}): ${config.descriptions.peopleConsulted}`,
     `- [${ui.pressTitle}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.press)}): ${config.descriptions.press}`,
-    `- [${ui.mcpPageTitle}](https://mcp.2022.cat): ${config.descriptions.mcpServer}`,
     `- [${config.mcpInstructionsTitle}](${buildLocalizedPageUrl(locale, STATIC_PAGE_SLUGS.mcp)}): ${config.descriptions.mcpInstructions}`
   );
 
-  if (locale === "ca") {
+  if (locale !== "en") {
     lines.push(
-      `- [English llms.txt](${makeAbsoluteUrl("/en/llms.txt")}): ${config.descriptions.englishMirror}`,
-      `- [English llms-full.txt](${makeAbsoluteUrl("/en/llms-full.txt")}): ${config.descriptions.englishFull}`,
-      `- [Spanish llms.txt](${makeAbsoluteUrl("/es/llms.txt")}): ${config.descriptions.spanishMirror}`,
-      `- [Spanish llms-full.txt](${makeAbsoluteUrl("/es/llms-full.txt")}): ${config.descriptions.spanishFull}`
-    );
-  } else if (locale === "en") {
-    lines.push(
-      `- [Catalan llms.txt](${makeAbsoluteUrl("/llms.txt")}): ${config.descriptions.catalanMirror}`,
-      `- [Catalan llms-full.txt](${makeAbsoluteUrl("/llms-full.txt")}): ${config.descriptions.catalanFull}`,
-      `- [Spanish llms.txt](${makeAbsoluteUrl("/es/llms.txt")}): ${config.descriptions.spanishMirror}`,
-      `- [Spanish llms-full.txt](${makeAbsoluteUrl("/es/llms-full.txt")}): ${config.descriptions.spanishFull}`
-    );
-  } else {
-    lines.push(
-      `- [Catalan llms.txt](${makeAbsoluteUrl("/llms.txt")}): ${config.descriptions.catalanMirror}`,
-      `- [Catalan llms-full.txt](${makeAbsoluteUrl("/llms-full.txt")}): ${config.descriptions.catalanFull}`,
       `- [English llms.txt](${makeAbsoluteUrl("/en/llms.txt")}): ${config.descriptions.englishMirror}`,
       `- [English llms-full.txt](${makeAbsoluteUrl("/en/llms-full.txt")}): ${config.descriptions.englishFull}`
+    );
+  }
+  if (locale !== "es") {
+    lines.push(
+      `- [Spanish llms.txt](${makeAbsoluteUrl("/es/llms.txt")}): ${config.descriptions.spanishMirror}`,
+      `- [Spanish llms-full.txt](${makeAbsoluteUrl("/es/llms-full.txt")}): ${config.descriptions.spanishFull}`
     );
   }
 
@@ -579,15 +557,15 @@ function buildCanonicalSection(locale: Locale): string {
     lines.push(
       `- [${config.canonicalLinkLabels.curated}](${makeAbsoluteUrl("/llms.txt")}): ${config.descriptions.curated}`,
       `- [${config.canonicalLinkLabels.full}](${makeAbsoluteUrl("/llms-full.txt")}): ${config.descriptions.fullContext}`,
-      `- [${config.canonicalLinkLabels.markdown}](${makeAbsoluteUrl("/documents/catalunya-2022-ca.md")}): ${config.descriptions.fullMarkdown}`,
-      `- [Document complet en PDF](${makeAbsoluteUrl("/documents/catalunya-2022-ca.pdf")}): ${config.descriptions.fullPdf}`,
-      `- [Document complet en EPUB](${makeAbsoluteUrl("/documents/catalunya-2022-ca.epub")}): ${config.descriptions.fullEpub}`
+      `- [${config.canonicalLinkLabels.markdown}](${documentDownloadUrl("ca", "md")}): ${config.descriptions.fullMarkdown}`,
+      `- [${config.fullPdfTitle}](${documentDownloadUrl("ca", "pdf")}): ${config.descriptions.fullPdf}`,
+      `- [${config.fullEpubTitle}](${documentDownloadUrl("ca", "epub")}): ${config.descriptions.fullEpub}`
     );
   } else {
     lines.push(
       `- [${config.canonicalLinkLabels.curated}](${makeAbsoluteUrl("/llms.txt")}): ${config.descriptions.catalanMirror}`,
       `- [${config.canonicalLinkLabels.full}](${makeAbsoluteUrl("/llms-full.txt")}): ${config.descriptions.catalanFull}`,
-      `- [${config.canonicalLinkLabels.markdown}](${makeAbsoluteUrl("/documents/catalunya-2022-ca.md")}): ${config.descriptions.catalanMarkdown}`
+      `- [${config.canonicalLinkLabels.markdown}](${documentDownloadUrl("ca", "md")}): ${config.descriptions.catalanMarkdown}`
     );
   }
 
@@ -622,8 +600,7 @@ export function buildCuratedIndex(
     "",
     buildGoalsSection(locale, localeData).trimEnd(),
     "",
-    buildDownloadsSection(locale).trimEnd(),
-    "",
+    ...(locale === "ca" ? [] : [buildDownloadsSection(locale).trimEnd(), ""]),
     buildOptionalSection(locale).trimEnd(),
     "",
   ];

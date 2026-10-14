@@ -26,9 +26,17 @@ type SearchDialogProps = {
   onOpenChange: (open: boolean) => void;
   scope?: SearchDocument["type"][];
   placeholder?: string;
+  onCloseAutoFocus?: (event: Event) => void;
 };
 
-export function SearchDialog({ locale, open, onOpenChange, scope, placeholder }: SearchDialogProps) {
+export function SearchDialog({
+  locale,
+  open,
+  onOpenChange,
+  scope,
+  placeholder,
+  onCloseAutoFocus,
+}: SearchDialogProps) {
   const router = useRouter();
   const t = uiStrings[locale];
   const { query, setQuery, retry, results, isLoading, isError, stats } = useSearch(
@@ -54,6 +62,7 @@ export function SearchDialog({ locale, open, onOpenChange, scope, placeholder }:
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
+      onCloseAutoFocus={onCloseAutoFocus}
       title={t.search}
       description={t.search}
       showCloseButton={false}

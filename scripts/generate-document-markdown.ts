@@ -15,6 +15,13 @@ import type { Locale } from "../src/i18n/routing";
 import { routing } from "../src/i18n/routing";
 import { DOCUMENT_TITLE } from "../src/lib/citation";
 import { extractHeadings, getContentDir, slugToFilePath } from "../src/lib/content-utils";
+import { documentDownloadPath } from "../src/lib/document-downloads";
+import {
+  listExistingMirrors,
+  listTrackedFiles,
+  removeStaleMirrors,
+  selectStaleMirrors,
+} from "../src/lib/markdown-mirrors";
 import { buildAbsoluteUrl } from "../src/lib/metadata";
 import { buildContentDocumentSlugs } from "../src/lib/page-registry";
 
@@ -55,13 +62,14 @@ async function generateDocument(sections: LoadedSection[], locale: Locale): Prom
 
 async function main(): Promise<void> {
   const publicDir = path.join(process.cwd(), "public");
-  let pageCount = 0;
+  const documentsDir = path.join(publicDir, "documents");
+  const mirrors = new Map<string, string>();
 
   for (const locale of routing.locales) {
     const slugs = buildContentDocumentSlugs();
     const sections = await Promise.all(slugs.map((slug) => loadSection(slug, locale)));
 
-    const documentPath = path.join(publicDir, "documents", `catalunya-2022-${locale}.md`);
+    const documentPath = path.join(publicDir, documentDownloadPath(locale, "md"));
     await fs.writeFile(documentPath, await generateDocument(sections, locale), "utf-8");
     console.log(`✓ ${path.relative(process.cwd(), documentPath)}`);
 
@@ -70,14 +78,22 @@ async function main(): Promise<void> {
     // e.g. /es/ambito-1/objetivo-2.md; served noindex via next.config headers.
     for (const section of sections) {
       const localizedPath = new URL(section.url).pathname;
-      const pagePath = path.join(publicDir, `${localizedPath.slice(1)}.md`);
-      await fs.mkdir(path.dirname(pagePath), { recursive: true });
-      await fs.writeFile(pagePath, renderPageMarkdown(section), "utf-8");
-      pageCount += 1;
+      mirrors.set(path.join(publicDir, `${localizedPath.slice(1)}.md`), renderPageMarkdown(section));
     }
   }
 
-  console.log(`✓ ${pageCount} per-page markdown mirrors`);
+  const stale = selectStaleMirrors(
+    await listExistingMirrors(publicDir, documentsDir),
+    mirrors,
+    listTrackedFiles(publicDir),
+  );
+  for (const [pagePath, markdown] of mirrors) {
+    await fs.mkdir(path.dirname(pagePath), { recursive: true });
+    await fs.writeFile(pagePath, markdown, "utf-8");
+  }
+  await removeStaleMirrors(stale, publicDir);
+
+  console.log(`✓ ${mirrors.size} per-page markdown mirrors (${stale.length} stale removed)`);
 }
 
 main().catch((error) => {

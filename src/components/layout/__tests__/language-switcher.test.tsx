@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -58,5 +58,14 @@ describe("LanguageSwitcher", () => {
     await user.click(screen.getAllByRole("button", { name: "English" })[1]);
 
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("marks the current language with aria-current", () => {
+    const { container } = render(<LanguageSwitcher currentLocale="en" />);
+
+    const items = within(container).getAllByRole("button");
+    expect(items.filter((item) => item.getAttribute("aria-current") === "true")).toHaveLength(1);
+    expect(within(container).getAllByRole("button", { name: "English" })[1]).toHaveAttribute("aria-current", "true");
+    expect(within(container).getByRole("button", { name: "Español" })).not.toHaveAttribute("aria-current");
   });
 });

@@ -14,7 +14,7 @@ export function ChatCard({ href, locale }: { href: string; locale: Locale }) {
       <div className="flex items-center gap-2">
         <MessageSquare className="size-5 text-primary" />
         <h3 className="text-sm font-medium">{t.openGPTApp}</h3>
-        <ExternalLink className="ml-auto size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+        <ExternalLink className="ml-auto size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true" />
       </div>
       <p className="text-xs text-muted-foreground">{t.chatCardDescription}</p>
       <span className="sr-only">{t.opensInNewTab}</span>

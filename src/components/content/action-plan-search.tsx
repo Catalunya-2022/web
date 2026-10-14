@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Search } from "lucide-react";
 import { uiStrings } from "@/lib/ui-strings";
@@ -14,6 +14,17 @@ const SearchDialog = dynamic(
 export function ActionPlanSearch({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(false);
   const t = uiStrings[locale];
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (open) returnFocusRef.current = document.activeElement as HTMLElement | null;
+  }, [open]);
+
+  const restoreFocus = useCallback((event: Event) => {
+    event.preventDefault();
+    const target = returnFocusRef.current;
+    if (target?.isConnected) target.focus();
+  }, []);
 
   return (
     <>
@@ -29,6 +40,7 @@ export function ActionPlanSearch({ locale }: { locale: Locale }) {
         locale={locale}
         open={open}
         onOpenChange={setOpen}
+        onCloseAutoFocus={restoreFocus}
         scope={["sphere", "goal", "action"]}
         placeholder={t.searchGoalsActions}
       />

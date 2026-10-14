@@ -27,7 +27,6 @@ export function PrevNextNav({
         <Link
           href={prev.href}
           className="group flex items-center gap-3 rounded-lg border p-4 transition-colors hover:border-primary/30 hover:bg-accent"
-          aria-label={`${prev.label}: ${prev.title}`}
         >
           <ChevronLeft className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5" />
           <div className="min-w-0">
@@ -42,7 +41,6 @@ export function PrevNextNav({
         <Link
           href={next.href}
           className="group flex items-center justify-end gap-3 rounded-lg border p-4 text-right transition-colors hover:border-primary/30 hover:bg-accent"
-          aria-label={`${next.label}: ${next.title}`}
         >
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">{next.label}</p>

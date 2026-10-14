@@ -9,7 +9,6 @@ import type { Locale } from "@/i18n/routing";
 
 type OrgForTable = {
   name: string;
-  normalizedName: string;
   website: string | null;
 };
 
@@ -17,11 +16,15 @@ export function OrgTable({ organizations, locale }: { organizations: OrgForTable
   const [query, setQuery] = useState("");
   const t = uiStrings[locale];
 
+  const normalizedNames = useMemo(
+    () => organizations.map((org) => normalizeForSearch(org.name)),
+    [organizations]
+  );
   const filtered = useMemo(() => {
     if (!query) return organizations;
     const q = normalizeForSearch(query);
-    return organizations.filter((org) => org.normalizedName.includes(q));
-  }, [organizations, query]);
+    return organizations.filter((_, index) => normalizedNames[index].includes(q));
+  }, [organizations, normalizedNames, query]);
 
   const showingText = formatUiString(t.showingOf, {
     count: filtered.length,
@@ -59,7 +62,7 @@ export function OrgTable({ organizations, locale }: { organizations: OrgForTable
                 className="group flex items-center gap-2 text-sm transition-colors hover:text-primary"
               >
                 <span>{org.name}</span>
-                <ExternalLink className="size-3 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+                <ExternalLink className="size-3 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true" />
                 <span className="sr-only">{t.opensInNewTab}</span>
               </a>
             ) : (

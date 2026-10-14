@@ -21,39 +21,39 @@ export const SPHERE_SUMMARIES: Record<SphereId, Trilingual> = {
 
 export const GOAL_SUMMARIES: Record<GoalId, Trilingual> = {
   1: {
-    ca: "Cultura i Participació",
-    en: "Culture & Participation",
-    es: "Cultura y Participación",
+    ca: "Accés a la Cultura",
+    en: "Access to Culture",
+    es: "Acceso a la Cultura",
   },
   2: {
-    ca: "Transformació Educativa",
-    en: "Education Transformation",
-    es: "Transformación Educativa",
+    ca: "Educació",
+    en: "Education",
+    es: "Educación",
   },
   3: {
     ca: "Atenció i Cura",
-    en: "Lifelong Care & Support",
+    en: "Lifelong Care",
     es: "Atención y Cuidado",
   },
   4: {
-    ca: "Habitatge Assequible",
+    ca: "Habitatge Digne",
     en: "Affordable Housing",
-    es: "Vivienda Asequible",
+    es: "Vivienda Digna",
   },
   5: {
-    ca: "Innovació en Sectors",
+    ca: "Innovació Sectorial",
     en: "Innovation in Sectors",
-    es: "Innovación en Sectores",
+    es: "Innovación",
   },
   6: {
-    ca: "Alimentació i Energia",
-    en: "Food & Energy Sovereignty",
-    es: "Alimentación y Energía",
+    ca: "Aliments i Energia",
+    en: "Food & Energy",
+    es: "Alimentos y Energía",
   },
   7: {
-    ca: "Coneixement i Explotació",
-    en: "Knowledge & Exploitation",
-    es: "Conocimiento y Explotación",
+    ca: "Coneixement",
+    en: "Knowledge",
+    es: "Conocimiento",
   },
   8: {
     ca: "Ciència i Dades",
@@ -61,19 +61,19 @@ export const GOAL_SUMMARIES: Record<GoalId, Trilingual> = {
     es: "Ciencia y Datos",
   },
   9: {
-    ca: "Talent Sector Públic",
+    ca: "Talent Públic",
     en: "Public Sector Talent",
-    es: "Talento Sector Público",
+    es: "Talento Público",
   },
   10: {
     ca: "Valor Públic",
-    en: "Public Value & Participation",
+    en: "Public Value",
     es: "Valor Público",
   },
   11: {
-    ca: "Coordinació Territorial",
+    ca: "Equilibri Territorial",
     en: "Regional Coordination",
-    es: "Coordinación Territorial",
+    es: "Equilibrio Regional",
   },
   12: {
     ca: "Catalunya Digital",

@@ -126,13 +126,7 @@ export default async function MemberProfilePage({ params }: Props) {
         // Same source the sitemap uses, so both freshness signals agree.
         dateModified: getTaskForceLastModified(),
       })} />
-      <PageActionBar
-        slug={memberSlug}
-        locale={l}
-        title={member.name}
-        rawContent={rawContent}
-        memberName={member.name}
-      />
+      <PageActionBar slug={memberSlug} locale={l} memberName={member.name} />
 
       <PageHeader subtitle={roleLabel} title={member.name} />
 

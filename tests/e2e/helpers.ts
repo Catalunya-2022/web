@@ -12,7 +12,7 @@ export type RegisteredTool = {
   readOnly: boolean | undefined;
 };
 
-/** Chromium 149 to 153 return the schema as a JSON string; 154+ as an object. */
+/** Chromium 149 to 154 return the schema as a JSON string and take a JSON string; 155+ use objects. */
 export async function listWebMcpTools(page: Page): Promise<RegisteredTool[]> {
   return page.evaluate(async () => {
     const context = document.modelContext;
@@ -40,7 +40,8 @@ export async function executeWebMcpTool<T>(
       if (!context) throw new Error("document.modelContext is unavailable");
       const tool = (await context.getTools()).find((candidate) => candidate.name === toolName);
       if (!tool) throw new Error(`tool ${toolName} is not registered`);
-      const raw = await context.executeTool(tool, JSON.stringify(args));
+      const legacyStringInput = typeof tool.inputSchema === "string";
+      const raw = await context.executeTool(tool, legacyStringInput ? JSON.stringify(args) : args);
       return (typeof raw === "string" ? JSON.parse(raw) : raw) as T;
     },
     { toolName: name, args: input },
@@ -57,7 +58,6 @@ export async function waitForWebMcpTools(page: Page, count = 4): Promise<Registe
 export async function gotoStablePage(page: Page, pathname: string): Promise<void> {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(pathname, { waitUntil: "networkidle" });
-  await page.waitForLoadState("networkidle");
   await page.waitForFunction(() => document.fonts?.status !== "loading");
   await expect(page.locator("body")).toBeVisible();
   await page.mouse.move(0, 0);

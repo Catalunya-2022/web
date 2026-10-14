@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DOCUMENT_TITLE } from "../citation";
 import { formatUiString, uiStrings } from "../ui-strings";
 
 describe("formatUiString", () => {
@@ -20,5 +21,13 @@ describe("formatUiString", () => {
         query: "a+b(c)?[d]{e}|^$",
       })
     ).toBe("No results found for “a+b(c)?[d]{e}|^$”.");
+  });
+});
+
+describe("document title family", () => {
+  it.each(["ca", "en", "es"] as const)("keeps the %s action plan title and tagline aligned with the citation title", (locale) => {
+    const t = uiStrings[locale];
+    expect(t.actionPlanTitle).toBe(`RESET: ${t.ogTagline}`);
+    expect(DOCUMENT_TITLE[locale]).toBe(`Catalunya 2022 - ${t.actionPlanTitle}`);
   });
 });

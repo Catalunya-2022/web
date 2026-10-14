@@ -10,13 +10,6 @@ import { localizeHref, parseHierarchySlug, toCanonicalPath } from "@/lib/path-ut
 import { formatUiString, uiStrings } from "@/lib/ui-strings";
 import type { Locale } from "@/i18n/routing";
 
-/**
- * Orientation card for visitors who land on a deep document page (sphere,
- * goal, or action) from outside the site without knowing what
- * "Catalunya 2022 - RESET" is: one sentence of context plus links to the
- * overview pages.
- */
-
 // sessionStorage: "deep" when the session's first page was a hierarchy page
 // reached from outside the site; "other" in every other case.
 const ENTRY_KEY = "c22-session-entry";
@@ -60,7 +53,6 @@ function ensureSessionEntry(canonicalPath: string): string {
   }
   return entry;
 }
-
 
 /**
  * Mounted once in the locale layout, renders nothing: classifies the session

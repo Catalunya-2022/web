@@ -10,7 +10,7 @@ import type { Person } from "@/lib/data/people-consulted";
 import type { PressSection } from "@/lib/data/press-coverage";
 import type { ResourceSection } from "@/lib/data/resources";
 import type { McpTool, McpResource, McpPrompt, WebMcpToolSpec } from "@/lib/data/mcp";
-import { mcpFieldLabels, mcpSectionHeadings } from "@/lib/data/mcp";
+import { mcpFieldLabels, mcpSectionHeadings, mcpServerUrl } from "@/lib/data/mcp";
 
 // Keep copy-helper previews short enough for external LLM query URLs.
 const MAX_LLM_SAMPLE_SIZE = 15;
@@ -277,7 +277,7 @@ export function generateMcpPageText(
     "",
     data.serverDescription,
     "",
-    "`https://mcp.2022.cat`",
+    `\`${mcpServerUrl}\``,
     "",
     `## ${h.examples[locale]}`,
     "",

@@ -34,12 +34,12 @@ export function PressCard({ article, locale }: { article: PressArticle; locale: 
           className="size-4 rounded-sm"
           loading="lazy"
         />
-        <span className="text-xs font-medium text-muted-foreground">
+        <span className="text-xs font-medium text-muted-foreground" lang={article.lang}>
           {article.outlet}
         </span>
       </div>
       <div className="flex flex-1 items-start px-5 pb-3">
-        <h3 className="line-clamp-3 text-sm font-medium leading-relaxed">
+        <h3 className="line-clamp-3 text-sm font-medium leading-relaxed" lang={article.lang}>
           {article.title}
         </h3>
       </div>
@@ -47,7 +47,7 @@ export function PressCard({ article, locale }: { article: PressArticle; locale: 
         <time className="text-xs text-muted-foreground" dateTime={article.date}>
           {formatDate(article.date, locale)}
         </time>
-        <ExternalLink className="size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+        <ExternalLink className="size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true" />
       </div>
       <span className="sr-only">{t.opensInNewTab}</span>
     </a>

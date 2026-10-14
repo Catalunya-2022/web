@@ -123,6 +123,8 @@ export function OGTemplate({
                   color: "#252226",
                   letterSpacing: -2,
                   lineHeight: 1,
+                  // satori 0.56 collapses trailing whitespace like a browser; keep the space before the tagline.
+                  whiteSpace: "pre",
                 }}
               >
                 {"RESET: "}
@@ -227,6 +229,8 @@ export function OGTemplate({
                 color: "#252226",
                 letterSpacing: -2,
                 lineHeight: 1,
+                // satori 0.56 collapses trailing whitespace like a browser; keep the space before the tagline.
+                whiteSpace: "pre",
               }}
             >
               {"RESET: "}

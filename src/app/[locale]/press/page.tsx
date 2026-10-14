@@ -32,7 +32,7 @@ export default async function PressPage({ params }: Props) {
         name: youtubeVideo.title[l],
         description: youtubeVideo.description[l],
         videoId: youtubeVideo.id,
-        uploadDate: "2021-06-10T00:00:00+02:00",
+        uploadDate: youtubeVideo.uploadDate,
         locale: l,
       })} />
       <div className="mb-12 overflow-hidden rounded-xl border bg-card">

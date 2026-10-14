@@ -1,11 +1,14 @@
 import { uiStrings } from "@/lib/ui-strings";
 import type { Locale } from "@/i18n/routing";
 import {
+  actionLabel,
   buildCanonicalActionPath,
   buildCanonicalGoalPath,
   buildCanonicalSpherePath,
+  goalLabel,
   localizeHref,
   parseHierarchySlug,
+  sphereLabel,
 } from "@/lib/path-utils";
 
 type Crumb = { slug: string; title: string; shortTitle?: string };
@@ -25,14 +28,14 @@ export function getBreadcrumbs(slug: string, locale: Locale, memberName?: string
     const sphereSlug = buildCanonicalSpherePath(parsed.sphereId);
     crumbs.push({
       slug: sphereSlug,
-      title: `${t.sphere} ${parsed.sphereId}`,
+      title: sphereLabel(parsed.sphereId, locale),
     });
 
     if (parsed.kind === "goal" || parsed.kind === "action") {
       const goalSlug = buildCanonicalGoalPath(parsed.sphereId, parsed.goalId);
       crumbs.push({
         slug: goalSlug,
-        title: `${t.goal} ${parsed.goalId}`,
+        title: goalLabel(parsed.goalId, locale),
       });
     }
 
@@ -44,7 +47,7 @@ export function getBreadcrumbs(slug: string, locale: Locale, memberName?: string
       );
       crumbs.push({
         slug: actionSlug,
-        title: `${t.action} ${parsed.actionId.replace("-", ".")}`,
+        title: actionLabel(parsed.actionId, locale),
       });
     }
   } else if (parts[0] === "task-force" && parts[1]) {

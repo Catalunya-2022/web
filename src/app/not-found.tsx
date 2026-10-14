@@ -1,37 +1,30 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { NotFoundContent } from "@/components/content/not-found-content";
 import { NotFoundTracker } from "@/components/content/not-found-tracker";
-import { localizeHref } from "@/lib/path-utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { inter, outfit } from "@/lib/fonts";
 import { uiStrings } from "@/lib/ui-strings";
 
+export const metadata: Metadata = {
+  title: uiStrings.ca.notFoundHeading,
+  robots: null,
+};
+
+/**
+ * Serves virtually every bad URL (dynamicParams is false on every dynamic
+ * route), prerendered as /_not-found with a real 404 status and no-store.
+ * It renders outside the locale layout, so it owns its <html>: Catalan on the
+ * server, re-rendered in the URL's language by NotFoundContent after
+ * hydration. Fonts and theme match the locale layout.
+ */
 export default function NotFound() {
   return (
-    <html lang="ca">
-      <body className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center font-sans">
-        <NotFoundTracker />
-        {/* No locale segment is available in this boundary, so fall back to the site's default language. */}
-        <h1 className="text-2xl font-bold tracking-tight">Pàgina no trobada</h1>
-        <p className="text-sm text-muted-foreground">
-          <Link href="/" className="text-primary underline-offset-2 hover:underline">
-            Tornar a l&apos;inici
-          </Link>
-          <span aria-hidden="true"> · </span>
-          <Link
-            href={localizeHref("/action-plan", "ca")}
-            className="text-primary underline-offset-2 hover:underline"
-          >
-            {uiStrings.ca.exploreActionPlan}
-          </Link>
-        </p>
-        {/* Recovery pointers for agents and crawlers that land on a dead URL. */}
-        <p className="text-xs text-muted-foreground">
-          <a href="/sitemap.xml" className="underline underline-offset-2 hover:text-foreground">
-            {uiStrings.ca.siteMap}
-          </a>
-          <span aria-hidden="true"> · </span>
-          <a href="/llms.txt" className="underline underline-offset-2 hover:text-foreground">
-            llms.txt
-          </a>
-        </p>
+    <html lang="ca" suppressHydrationWarning>
+      <body className={`${inter.variable} ${outfit.variable} font-sans`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <NotFoundTracker />
+          <NotFoundContent initialLocale="ca" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -5,7 +5,6 @@ import {
   BookOpen,
   Presentation,
   Scale,
-  Github,
   Server,
   BarChart3,
   MessageCircle,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { GithubIcon } from "@/components/icons/github-icon";
 import { localizeHref } from "@/lib/path-utils";
 import type { ResourceItem, ResourceIconName } from "@/lib/data/resources";
 import { localized } from "@/i18n/routing";
@@ -24,7 +24,7 @@ const RESOURCE_ICONS = {
   "book-open": BookOpen,
   "presentation": Presentation,
   "scale": Scale,
-  "github": Github,
+  "github": GithubIcon,
   "server": Server,
   "bar-chart-3": BarChart3,
   "message-circle": MessageCircle,

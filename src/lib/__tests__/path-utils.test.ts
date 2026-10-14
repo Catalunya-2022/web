@@ -120,8 +120,26 @@ describe("toCanonicalPath", () => {
     expect(toCanonicalPath("/en/introduction")).toBe("/introduction");
   });
 
+  it("normalises trailing and doubled slashes on EN paths like CA and ES", () => {
+    expect(toCanonicalPath("/en/sphere-1/")).toBe("/sphere-1");
+    expect(toCanonicalPath("/en//sphere-1")).toBe("/sphere-1");
+    expect(toCanonicalPath("/en")).toBe("/");
+    expect(toCanonicalPath("/ambit-1/")).toBe("/sphere-1");
+    expect(toCanonicalPath("/es//ambito-1")).toBe("/sphere-1");
+  });
+
   it("handles root path", () => {
     expect(toCanonicalPath("/")).toBe("/");
+  });
+
+  it("treats the proxy's internal /ca prefix as the pathless Catalan URL (prerender vs browser)", () => {
+    expect(toCanonicalPath("/ca")).toBe("/");
+    expect(toCanonicalPath("/ca/")).toBe("/");
+    expect(toCanonicalPath("/ca/action-plan")).toBe("/action-plan");
+    expect(toCanonicalPath("/ca/sphere-1/goal-2/action-2-1")).toBe("/sphere-1/goal-2/action-2-1");
+    expect(toCanonicalPath("/ca/task-force/victoria-alsina")).toBe("/task-force/victoria-alsina");
+    expect(toCanonicalPath("/ca/sphere-1/goal-2/action-2-1")).toBe(toCanonicalPath("/ambit-1/objectiu-2/accio-2-1"));
+    expect(toCanonicalPath("/catalunya")).toBe("/catalunya");
   });
 });
 

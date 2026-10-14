@@ -8,7 +8,12 @@ import {
   extractHeadings,
   slugToFilePath,
 } from "@/lib/content-utils";
-import { parseHierarchySlug, shortHierarchyLabel } from "@/lib/path-utils";
+import {
+  goalLabel,
+  hierarchyLabel,
+  parseHierarchySlug,
+  sphereLabel,
+} from "@/lib/path-utils";
 import {
   GOAL_SUMMARIES,
   SPHERE_SUMMARIES,
@@ -36,19 +41,18 @@ export type ContentManifest = {
 };
 
 function makeSidebarTitle(slug: string, h1: string, locale: Locale): string {
-  const t = uiStrings[locale];
   const parsed = parseHierarchySlug(slug);
 
   if (parsed?.kind === "action") {
-    return shortHierarchyLabel(slug, locale) ?? h1;
+    return hierarchyLabel(parsed, locale);
   }
 
   if (parsed?.kind === "goal") {
-    return `${t.goal} ${parsed.goalId}: ${localized(GOAL_SUMMARIES[parsed.goalId], locale)}`;
+    return `${goalLabel(parsed.goalId, locale)}: ${localized(GOAL_SUMMARIES[parsed.goalId], locale)}`;
   }
 
   if (parsed?.kind === "sphere") {
-    return `${t.sphere} ${parsed.sphereId}: ${localized(SPHERE_SUMMARIES[parsed.sphereId], locale)}`;
+    return `${sphereLabel(parsed.sphereId, locale)}: ${localized(SPHERE_SUMMARIES[parsed.sphereId], locale)}`;
   }
 
   return isStaticContentSlug(slug) ? getStaticContentPageTitle(slug, locale) : h1;
@@ -72,7 +76,7 @@ export async function getManifest(locale: Locale): Promise<ContentManifest> {
   try {
     return await manifestPromise;
   } catch (error) {
-    manifestCache.delete(locale);
+    if (manifestCache.get(locale) === manifestPromise) manifestCache.delete(locale);
     throw error;
   }
 }

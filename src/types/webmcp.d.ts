@@ -1,6 +1,8 @@
 type ModelContextToolAnnotations = {
   readOnlyHint?: boolean;
   untrustedContentHint?: boolean;
+  consequentialHint?: boolean;
+  debugging?: boolean;
 };
 
 type ModelContextToolExecuteOptions = {
@@ -34,6 +36,10 @@ type ModelContextRegisteredTool = {
   annotations?: ModelContextToolAnnotations;
 };
 
+type ToolActivatedEvent = Event & { readonly toolName: string };
+
+type ToolCancelEvent = Event & { readonly toolName: string };
+
 interface ModelContext extends EventTarget {
   registerTool(
     tool: ModelContextTool,
@@ -42,10 +48,12 @@ interface ModelContext extends EventTarget {
   getTools(options?: { fromOrigins?: string[] }): Promise<ModelContextRegisteredTool[]>;
   executeTool(
     tool: ModelContextRegisteredTool,
-    input?: string | Record<string, unknown>,
+    input?: Record<string, unknown> | string,
     options?: { signal?: AbortSignal },
   ): Promise<string | null>;
   ontoolchange: ((this: ModelContext, event: Event) => unknown) | null;
+  ontoolactivated: ((this: ModelContext, event: ToolActivatedEvent) => unknown) | null;
+  ontoolcancel: ((this: ModelContext, event: ToolCancelEvent) => unknown) | null;
 }
 
 interface Document {

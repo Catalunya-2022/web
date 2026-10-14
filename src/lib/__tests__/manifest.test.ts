@@ -8,9 +8,11 @@ describe("buildManifest", () => {
       const manifest = buildManifest(locale as Locale);
 
       it("has required fields", () => {
-        expect(manifest.name).toBeTruthy();
+        expect(typeof manifest.name).toBe("string");
+        expect(manifest.name!.length).toBeGreaterThan(5);
         expect(manifest.short_name).toBe("Catalunya 2022");
-        expect(manifest.description).toBeTruthy();
+        expect(typeof manifest.description).toBe("string");
+        expect(manifest.description!.length).toBeGreaterThan(20);
         expect(manifest.display).toBe("browser");
         expect(manifest.lang).toBe(locale);
         expect(manifest.dir).toBe("ltr");

@@ -27,17 +27,19 @@ export function PressTable({ articles, locale }: { articles: PressArticle[]; loc
               className="size-4 shrink-0 rounded-sm"
               loading="lazy"
             />
-            <span className="hidden w-36 shrink-0 text-xs text-muted-foreground sm:inline">
+            <span className="hidden w-36 shrink-0 text-xs text-muted-foreground sm:inline" lang={article.lang}>
               {article.outlet}
             </span>
-            <span className="min-w-0 flex-1 truncate">{article.title}</span>
+            <span className="min-w-0 flex-1 truncate" lang={article.lang}>
+              {article.title}
+            </span>
             <time
               className="hidden shrink-0 text-xs text-muted-foreground sm:block"
               dateTime={article.date}
             >
               {formatDate(article.date, locale)}
             </time>
-            <ExternalLink className="size-3 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+            <ExternalLink className="size-3 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true" />
             <span className="sr-only">{t.opensInNewTab}</span>
           </a>
         </li>

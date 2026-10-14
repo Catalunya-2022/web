@@ -95,17 +95,7 @@ export function extractHeadings(content: string): {
   return { h1, h2, bodyStartIndex };
 }
 
-/**
- * Map a canonical slug to its content file path on disk.
- *
- * New slug format (hyphenated):
- *   /sphere-1           → sphere1/sphere1.mdx
- *   /sphere-1/goal-2    → sphere1/goal2/goal2.mdx
- *   /sphere-1/goal-2/action-2-1 → sphere1/goal2/action-2-1.mdx
- *
- * Top-level pages:
- *   /introduction       → introduction.mdx
- */
+/** Map a canonical slug to its content file path on disk. */
 export function slugToFilePath(slug: string, contentDir: string): string {
   const segments = slug.split("/").filter(Boolean);
   let relativePath: string;

@@ -186,12 +186,11 @@ export async function search(
     }
   }
 
-  const q = normalizeForSearch(trimmed);
   const ranked = results.map((r) => ({
     ...r,
     _titleMatch:
-      normalizeForSearch(r.title).includes(q) ||
-      normalizeForSearch(r.identifier).includes(q),
+      normalizeForSearch(r.title).includes(normalized) ||
+      normalizeForSearch(r.identifier).includes(normalized),
   }));
   ranked.sort((a, b) => (a._titleMatch ? 0 : 1) - (b._titleMatch ? 0 : 1));
 

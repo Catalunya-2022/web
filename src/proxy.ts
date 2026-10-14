@@ -8,11 +8,7 @@ const LOCALE_HEADER = "X-NEXT-INTL-LOCALE";
 const LOCALIZED_ROUTE_HEADER = "X-CATALUNYA-LOCALIZED-ROUTE";
 
 function buildInternalLocalePath(canonical: string, locale: Locale) {
-  if (canonical === "/") {
-    return locale === "ca" ? "/ca" : `/${locale}`;
-  }
-
-  return locale === "ca" ? `/ca${canonical}` : `/${locale}${canonical}`;
+  return canonical === "/" ? `/${locale}` : `/${locale}${canonical}`;
 }
 
 function setLocaleCookie(response: NextResponse, request: NextRequest, locale: Locale) {
@@ -67,8 +63,7 @@ export default function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
 
-  // Requests that we've already rewritten from a localized external route
-  // should reach the app directly instead of being redirected back out.
+  // Defense in depth: a request already rewritten from a localized route must never be redirected back out.
   if (request.headers.get(LOCALIZED_ROUTE_HEADER) === "1") {
     const response = NextResponse.next({
       request: { headers: requestHeaders },
@@ -77,9 +72,6 @@ export default function proxy(request: NextRequest) {
     return response;
   }
 
-  // Unified resolveRoute() dispatch — one entry point for our route classes
-  // (static/dynamic catalog, CA hierarchy).
-  // Pass `locale` already computed above to avoid a redundant detectLocale regex.
   const resolution = resolveRoute(pathname, locale);
   if (resolution) {
     switch (resolution.kind) {
@@ -95,10 +87,7 @@ export default function proxy(request: NextRequest) {
         // internally to /ca/<pathname> so Next.js can resolve [locale]=ca.
         return rewriteToInternal(request, requestHeaders, pathname, "ca");
       default: {
-        // EXHAUSTIVENESS GUARD: a new RouteResolution variant without a case
-        // arm here fails typecheck on this never assignment. This is the
-        // architectural guarantee that no new route variant can silently fall
-        // through to Accept-Language redirection.
+        // Exhaustiveness guard: a new RouteResolution kind without a case arm fails typecheck here.
         const _exhaustive: never = resolution;
         throw new Error(`Unhandled route kind: ${JSON.stringify(_exhaustive)}`);
       }

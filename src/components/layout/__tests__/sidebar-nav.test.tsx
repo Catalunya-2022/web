@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { AnchorHTMLAttributes } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -108,5 +108,12 @@ describe("SidebarNav", () => {
     expect(
       (await screen.findAllByRole("link", { name: "Action 1.1" }))[0]
     ).toHaveAttribute("href", "/en/sphere-1/goal-1/action-1-1");
+  });
+
+  it("exposes the menu as a labelled navigation landmark", () => {
+    const { container } = renderSidebar();
+
+    const landmark = within(container).getByRole("navigation", { name: "Navigation" });
+    expect(within(landmark).getAllByRole("link", { name: "Action Plan" })).toHaveLength(1);
   });
 });

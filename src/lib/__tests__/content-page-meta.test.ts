@@ -25,13 +25,13 @@ describe("getContentPageMetadata", () => {
     expect(meta.description).toBe("This paragraph includes markdown and inline code.");
   });
 
-  it("falls back to the identifier when no subtitle exists", () => {
+  it("leaves the description undefined for an empty body", () => {
     expect(
       getContentPageMetadata({
         identifier: "Introduction",
-        subtitle: null,
+        subtitle: "Subtitle",
         body: "",
       })
-    ).toEqual({ title: "Introduction", description: undefined });
+    ).toEqual({ title: "Introduction: Subtitle", description: undefined });
   });
 });

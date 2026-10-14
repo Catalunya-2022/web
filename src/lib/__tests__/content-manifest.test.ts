@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { getManifest } from "../content-manifest";
+import { EXPECTED_COUNTS } from "@/test/contract";
 
 describe("getManifest", () => {
   it("covers 117 pages per locale: 109 content + 7 supplementary + home", async () => {
     for (const locale of ["ca", "en", "es"] as const) {
       const manifest = await getManifest(locale);
-      expect(manifest.entries.size).toBe(117);
-      expect(manifest.readingOrder).toHaveLength(117);
+      expect(manifest.entries.size).toBe(EXPECTED_COUNTS.readingOrder);
+      expect(manifest.readingOrder).toHaveLength(EXPECTED_COUNTS.readingOrder);
     }
   });
 

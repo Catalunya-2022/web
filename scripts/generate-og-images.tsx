@@ -36,6 +36,8 @@ import {
   buildCanonicalSpherePath,
   buildCanonicalGoalPath,
   buildCanonicalActionPath,
+  goalLabel,
+  sphereLabel,
 } from "../src/lib/path-utils";
 import { uiStrings } from "../src/lib/ui-strings";
 import { teamMembers } from "../src/lib/data/team-members";
@@ -160,7 +162,7 @@ function buildAllSpecs(photoCache: Map<string, string>): OGImageSpec[] {
         slug,
         locale,
         props: {
-          label: `${t.actionPlan} \u203a ${t.sphere} ${sphereId}`,
+          label: `${t.actionPlan} \u203a ${sphereLabel(sphereId, locale)}`,
           heading: h1,
           title: h2,
           locale,
@@ -176,7 +178,7 @@ function buildAllSpecs(photoCache: Map<string, string>): OGImageSpec[] {
         slug,
         locale,
         props: {
-          label: `${t.actionPlan} \u203a ${t.sphere} ${sphereId} \u203a ${t.goal} ${goalId}`,
+          label: `${t.actionPlan} \u203a ${sphereLabel(sphereId, locale)} \u203a ${goalLabel(goalId, locale)}`,
           heading: h1,
           title: h2,
           locale,

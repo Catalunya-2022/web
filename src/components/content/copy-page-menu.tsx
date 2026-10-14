@@ -16,6 +16,7 @@ import { CopyIcon, OpenAIIcon, ClaudeIcon } from "@/components/icons/copy-share-
 import type { Locale } from "@/i18n/routing";
 
 type CopyState = "idle" | "copying" | "copied";
+type CopyEvent = "Copy Page: Markdown" | "Copy Page: Citation" | "Copy Page: Share Link";
 
 /**
  * Copy/share state machine and handlers shared by the desktop CopyPageDropdown
@@ -39,47 +40,46 @@ export function useCopyPageActions(
     if (printTimerRef.current) clearTimeout(printTimerRef.current);
   }, []);
 
-  const copyWithFeedback = useCallback(async (text: string, message: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedMessage(message);
-      setCopyState("copied");
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setCopyState("idle"), 2000);
-    } catch { /* silent */ }
-  }, []);
+  const copyToClipboard = useCallback(
+    async (event: CopyEvent, text: string, message: string, showPending: boolean) => {
+      if (copyState === "copying" || !navigator.clipboard) return;
+      trackEvent(event);
+      if (showPending) {
+        setCopyState("copying");
+        if (timerRef.current) clearTimeout(timerRef.current);
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopiedMessage(message);
+        setCopyState("copied");
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => setCopyState("idle"), 2000);
+      } catch {
+        if (showPending) setCopyState("idle");
+      }
+    },
+    [copyState]
+  );
 
   const handleCopy = useCallback(() => {
-    // navigator.clipboard is undefined in non-secure contexts; touching
-    // .writeText there throws synchronously, before any .catch exists.
-    if (!payload || copyState === "copying" || !navigator.clipboard) return;
-    trackEvent("Copy Page: Markdown");
-    setCopyState("copying");
-    if (timerRef.current) clearTimeout(timerRef.current);
-    navigator.clipboard.writeText(payload.markdownText).then(() => {
-      setCopiedMessage(t.pageCopied);
-      setCopyState("copied");
-      timerRef.current = setTimeout(() => setCopyState("idle"), 2000);
-    }).catch(() => {
-      setCopyState("idle");
-    });
-  }, [payload, copyState, t.pageCopied]);
+    if (!payload) return;
+    void copyToClipboard("Copy Page: Markdown", payload.markdownText, t.pageCopied, true);
+  }, [payload, copyToClipboard, t.pageCopied]);
 
   const handleCopyCitation = useCallback(async () => {
     if (!payload) return;
-    trackEvent("Copy Page: Citation");
-    await copyWithFeedback(payload.citationText, t.citationCopied);
-  }, [payload, copyWithFeedback, t.citationCopied]);
+    await copyToClipboard("Copy Page: Citation", payload.citationText, t.citationCopied, false);
+  }, [payload, copyToClipboard, t.citationCopied]);
 
   const handleShareOrCopyLink = useCallback(async () => {
     if (!payload) return;
-    trackEvent("Copy Page: Share Link");
-    if (canShare) {
-      try { await navigator.share({ title, url: payload.url }); } catch { /* user cancelled */ }
-    } else {
-      await copyWithFeedback(payload.url, t.linkCopied);
+    if (!canShare) {
+      await copyToClipboard("Copy Page: Share Link", payload.url, t.linkCopied, false);
+      return;
     }
-  }, [payload, canShare, title, copyWithFeedback, t.linkCopied]);
+    trackEvent("Copy Page: Share Link");
+    try { await navigator.share({ title, url: payload.url }); } catch { /* user cancelled */ }
+  }, [payload, canShare, title, copyToClipboard, t.linkCopied]);
 
   const handlePrint = useCallback(() => {
     trackEvent("Copy Page: Print");

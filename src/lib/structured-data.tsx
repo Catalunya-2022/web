@@ -2,9 +2,11 @@ import type { ReactElement } from "react";
 import type { Locale } from "@/i18n/routing";
 import { DOCUMENT_DOI_URL, DOCUMENT_TITLE } from "@/lib/citation";
 import { DOCUMENT_PUBLICATION_DATE } from "@/lib/data/constants";
+import { getMemberBySlug } from "@/lib/data/team-members";
 import { uiStrings } from "@/lib/ui-strings";
 import { INTL_LOCALE_MAP } from "@/lib/utils";
 import { BASE_URL } from "@/lib/metadata";
+import { documentDownloadUrl } from "@/lib/document-downloads";
 
 export function breadcrumbListSchema(items: { name: string; url: string }[]) {
   return {
@@ -42,11 +44,27 @@ const ORGANIZATION_SAME_AS = [
 // Creation of the task force (2 June 2020), not the document's publication.
 const TASK_FORCE_FOUNDING_DATE = "2020-06-02";
 
+const MADRID_OFFSET_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Europe/Madrid",
+  timeZoneName: "longOffset",
+});
+
+function madridOffset(date: string): string {
+  const [year, month, day] = date.split("-").map(Number);
+  const zone =
+    MADRID_OFFSET_FORMAT.formatToParts(new Date(Date.UTC(year, month - 1, day))).find(
+      (part) => part.type === "timeZoneName"
+    )?.value ?? "GMT+01:00";
+  return zone === "GMT" ? "+00:00" : zone.slice(3);
+}
+
 /** Git-derived lastmods are date-only; render them in the same ISO datetime
  *  shape as dateCreated/datePublished (Search Console flags the mismatch). */
 function toJsonLdDateTime(date: string): string {
-  return date.includes("T") ? date : `${date}T00:00:00+02:00`;
+  return date.includes("T") ? date : `${date}T00:00:00${madridOffset(date)}`;
 }
+
+const PUBLICATION_DATETIME = toJsonLdDateTime(DOCUMENT_PUBLICATION_DATE);
 
 export function articleSchema(params: {
   title: string;
@@ -64,7 +82,7 @@ export function articleSchema(params: {
     url: params.url,
     ...(params.image && { image: params.image }),
     inLanguage: INTL_LOCALE_MAP[params.locale],
-    datePublished: `${DOCUMENT_PUBLICATION_DATE}T00:00:00+02:00`,
+    datePublished: PUBLICATION_DATETIME,
     ...(params.dateModified && { dateModified: toJsonLdDateTime(params.dateModified) }),
     license: "https://creativecommons.org/licenses/by/4.0/",
     citation: {
@@ -144,19 +162,23 @@ export function profilePageSchema(params: {
   locale: Locale;
   dateModified?: string;
 }) {
+  const jobTitle = getMemberBySlug(params.memberSlug)?.role[params.locale];
+
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    dateCreated: `${DOCUMENT_PUBLICATION_DATE}T00:00:00+02:00`,
+    url: params.url,
+    dateCreated: PUBLICATION_DATETIME,
     dateModified: params.dateModified
       ? toJsonLdDateTime(params.dateModified)
-      : `${DOCUMENT_PUBLICATION_DATE}T00:00:00+02:00`,
+      : PUBLICATION_DATETIME,
     mainEntity: {
       "@type": "Person",
       // One node per person across all three locales; a localized @id would
       // fragment the entity (see the node-id note above ORGANIZATION_ID).
       "@id": `${BASE_URL}/task-force/${params.memberSlug}#person`,
       name: params.name,
+      ...(jobTitle && { jobTitle }),
       description: params.description,
       url: params.url,
       image: params.image,
@@ -229,9 +251,9 @@ export function datasetSchema(params: {
     },
     inLanguage: INTL_LOCALE_MAP[params.locale],
     distribution: (["ca", "en", "es"] as const).flatMap((lang) => [
-      { "@type": "DataDownload", encodingFormat: "application/pdf", contentUrl: `${BASE_URL}/documents/catalunya-2022-${lang}.pdf`, inLanguage: lang },
-      { "@type": "DataDownload", encodingFormat: "application/epub+zip", contentUrl: `${BASE_URL}/documents/catalunya-2022-${lang}.epub`, inLanguage: lang },
-      { "@type": "DataDownload", encodingFormat: "text/markdown", contentUrl: `${BASE_URL}/documents/catalunya-2022-${lang}.md`, inLanguage: lang },
+      { "@type": "DataDownload", encodingFormat: "application/pdf", contentUrl: documentDownloadUrl(lang, "pdf"), inLanguage: lang },
+      { "@type": "DataDownload", encodingFormat: "application/epub+zip", contentUrl: documentDownloadUrl(lang, "epub"), inLanguage: lang },
+      { "@type": "DataDownload", encodingFormat: "text/markdown", contentUrl: documentDownloadUrl(lang, "md"), inLanguage: lang },
     ]),
   };
 }

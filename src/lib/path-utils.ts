@@ -9,15 +9,12 @@ type ParsedSegment =
   | { dynamic: true; key: string }
   | { dynamic: false; literal: string };
 
+type SegmentForm = Locale | "canonical";
+
 type ParsedPattern = {
   canonical: string;
-  segments: ParsedSegment[];
-  locales: { ca: string; en: string; es: string };
-  localeSegments: {
-    ca: ParsedSegment[];
-    en: ParsedSegment[];
-    es: ParsedSegment[];
-  };
+  locales: Record<Locale, string>;
+  segments: Record<SegmentForm, ParsedSegment[]>;
 };
 
 function parseSegments(pattern: string): ParsedSegment[] {
@@ -33,9 +30,9 @@ function parseSegments(pattern: string): ParsedSegment[] {
 const PARSED_CATALOG: ParsedPattern[] = Object.entries(ROUTE_CATALOG).map(
   ([canonical, locales]) => ({
     canonical,
-    segments: parseSegments(canonical),
     locales,
-    localeSegments: {
+    segments: {
+      canonical: parseSegments(canonical),
       ca: parseSegments(locales.ca),
       en: parseSegments(locales.en),
       es: parseSegments(locales.es),
@@ -46,6 +43,13 @@ const PARSED_CATALOG: ParsedPattern[] = Object.entries(ROUTE_CATALOG).map(
 const PREFIXED_LOCALES = ["en", "es"] as const;
 
 const LOCALE_PREFIX_RE = new RegExp(`^/(${PREFIXED_LOCALES.join("|")})(\/.*)?$`);
+
+function splitLocalePrefix(pathname: string): { locale: Locale; path: string } {
+  const match = pathname.match(LOCALE_PREFIX_RE);
+  return match
+    ? { locale: match[1] as Locale, path: match[2] || "/" }
+    : { locale: "ca", path: pathname };
+}
 
 function matchPattern(
   pathSegs: string[],
@@ -63,6 +67,24 @@ function matchPattern(
     }
   }
   return params;
+}
+
+type CatalogMatch = { pattern: ParsedPattern; params: RouteParams };
+
+function matchCatalog(pathSegs: string[], form: SegmentForm): CatalogMatch | null {
+  for (const pattern of PARSED_CATALOG) {
+    const params = matchPattern(pathSegs, pattern.segments[form]);
+    if (params !== null) return { pattern, params };
+  }
+  return null;
+}
+
+/** Replacer callback, not a string: request-path values could contain `$` patterns. */
+function fillPattern(pattern: string, params: RouteParams): string {
+  return Object.entries(params).reduce(
+    (acc, [key, value]) => acc.replace(`[${key}]`, () => value),
+    pattern
+  );
 }
 
 export function buildSphereSlug(sphereId: SphereId, locale: Locale = "en"): string {
@@ -116,7 +138,7 @@ export function parseSegmentId(segment: string): { type: "sphere" | "goal" | "ac
 type ResolvedSphere = { sphereId: SphereId };
 type ResolvedGoal = { sphereId: SphereId; goalId: GoalId };
 type ResolvedAction = { sphereId: SphereId; goalId: GoalId; actionId: string };
-type ResolvedHierarchy =
+export type ResolvedHierarchy =
   | ({ kind: "sphere" } & ResolvedSphere)
   | ({ kind: "goal" } & ResolvedGoal)
   | ({ kind: "action" } & ResolvedAction);
@@ -179,18 +201,31 @@ export function parseHierarchySlug(slug: string): ResolvedHierarchy | null {
   return null;
 }
 
-export function shortHierarchyLabel(slug: string, locale: Locale): string | null {
-  const t = uiStrings[locale];
-  const parsed = parseHierarchySlug(slug);
+export function formatActionNumber(actionId: string): string {
+  return actionId.replace("-", ".");
+}
 
-  if (!parsed) return null;
-  if (parsed.kind === "action") {
-    return `${t.action} ${parsed.actionId.replace("-", ".")}`;
-  }
-  if (parsed.kind === "goal") {
-    return `${t.goal} ${parsed.goalId}`;
-  }
-  return `${t.sphere} ${parsed.sphereId}`;
+export function sphereLabel(sphereId: SphereId, locale: Locale): string {
+  return `${uiStrings[locale].sphere} ${sphereId}`;
+}
+
+export function goalLabel(goalId: GoalId, locale: Locale): string {
+  return `${uiStrings[locale].goal} ${goalId}`;
+}
+
+export function actionLabel(actionId: string, locale: Locale): string {
+  return `${uiStrings[locale].action} ${formatActionNumber(actionId)}`;
+}
+
+export function hierarchyLabel(parsed: ResolvedHierarchy, locale: Locale): string {
+  if (parsed.kind === "action") return actionLabel(parsed.actionId, locale);
+  if (parsed.kind === "goal") return goalLabel(parsed.goalId, locale);
+  return sphereLabel(parsed.sphereId, locale);
+}
+
+export function shortHierarchyLabel(slug: string, locale: Locale): string | null {
+  const parsed = parseHierarchySlug(slug);
+  return parsed ? hierarchyLabel(parsed, locale) : null;
 }
 
 function translateSegment(seg: string, fromLocale: Locale, toLocale: Locale): string {
@@ -214,24 +249,10 @@ export function detectLocale(pathname: string): Locale {
 /** Translate a canonical slug to the locale-specific path and prepend locale prefix. */
 export function localizeHref(slug: string, locale: Locale): string {
   const pathSegs = slug.split("/").filter(Boolean);
-
-  for (const parsed of PARSED_CATALOG) {
-    const params = matchPattern(pathSegs, parsed.segments);
-    if (params !== null) {
-      const localePattern = Object.entries(params).reduce(
-        // Replacer function: a plain string replacement would expand $-patterns
-        // in values that come from the request path.
-        (acc, [key, value]) => acc.replace(`[${key}]`, () => value),
-        parsed.locales[locale]
-      );
-      const localized =
-        locale === "ca" ? localePattern : `/${locale}${localePattern}`;
-      return localized === "/" ? "/" : localized.replace(/\/$/, "");
-    }
-  }
-
-  const translated = pathSegs.map(seg => translateSegment(seg, "en", locale));
-  const localePath = "/" + translated.join("/");
+  const match = matchCatalog(pathSegs, "canonical");
+  const localePath = match
+    ? fillPattern(match.pattern.locales[locale], match.params)
+    : "/" + pathSegs.map((seg) => translateSegment(seg, "en", locale)).join("/");
   const localized = locale === "ca" ? localePath : `/${locale}${localePath}`;
   return localized === "/" ? "/" : localized.replace(/\/$/, "");
 }
@@ -245,22 +266,9 @@ export function resolveLocalizedRoute(
   pathname: string,
   locale: Locale
 ): { canonical: string } | null {
-  // Strip locale prefix for EN/ES (mirrors toCanonicalPath's approach).
-  const localeMatch = pathname.match(LOCALE_PREFIX_RE);
-  const withoutLocale = localeMatch ? localeMatch[2] || "/" : pathname;
-
-  const pathSegs = withoutLocale.split("/").filter(Boolean);
-  for (const parsed of PARSED_CATALOG) {
-    const params = matchPattern(pathSegs, parsed.localeSegments[locale]);
-    if (params !== null) {
-      const canonical = Object.entries(params).reduce(
-        (acc, [key, value]) => acc.replace(`[${key}]`, () => value),
-        parsed.canonical
-      );
-      return { canonical };
-    }
-  }
-  return null;
+  const pathSegs = splitLocalePrefix(pathname).path.split("/").filter(Boolean);
+  const match = matchCatalog(pathSegs, locale);
+  return match ? { canonical: fillPattern(match.pattern.canonical, match.params) } : null;
 }
 
 /** CA hierarchy segment prefixes (ambit, objectiu, accio). The default locale
@@ -311,32 +319,22 @@ export function resolveRoute(
   return null;
 }
 
+/** The proxy serves pathless Catalan URLs by rewriting them to this internal
+ *  prefix (`/ca/<canonical>`). During prerender, client components therefore
+ *  see `/ca/...` from usePathname() while the browser later sees the public
+ *  pathless URL; both must map to the same canonical path or the server and
+ *  client markup diverge (hydration error on the home and dynamic CA pages). */
+const INTERNAL_CA_PREFIX_RE = /^\/ca(?=\/|$)/;
+
 /** Convert a raw URL pathname to its canonical (English) path. */
 export function toCanonicalPath(rawPathname: string): string {
-  const localeMatch = rawPathname.match(LOCALE_PREFIX_RE);
-  const locale = (localeMatch?.[1] ?? "ca") as Locale;
-  const withoutLocale = localeMatch ? localeMatch[2] || "/" : rawPathname;
+  const { locale, path } = splitLocalePrefix(rawPathname.replace(INTERNAL_CA_PREFIX_RE, "") || "/");
+  const pathSegs = path.split("/").filter(Boolean);
 
-  if (locale === "en") {
-    return withoutLocale;
-  }
+  if (locale === "en") return "/" + pathSegs.join("/");
 
-  const pathSegs = withoutLocale.split("/").filter(Boolean);
+  const match = matchCatalog(pathSegs, locale);
+  if (match) return fillPattern(match.pattern.canonical, match.params);
 
-  for (const parsed of PARSED_CATALOG) {
-    const params = matchPattern(pathSegs, parsed.localeSegments[locale]);
-    if (params !== null) {
-      return Object.entries(params).reduce(
-        (acc, [key, value]) => acc.replace(`[${key}]`, () => value),
-        parsed.canonical
-      );
-    }
-  }
-
-  if (pathSegs.length > 0) {
-    const canonical = pathSegs.map(seg => translateSegment(seg, locale, "en"));
-    return "/" + canonical.join("/");
-  }
-
-  return withoutLocale;
+  return "/" + pathSegs.map((seg) => translateSegment(seg, locale, "en")).join("/");
 }

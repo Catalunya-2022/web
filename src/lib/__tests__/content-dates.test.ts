@@ -1,13 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
+  BASE_LAST_MOD,
   getContentLastModified,
   getTaskForceLastModified,
 } from "../content-dates";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-// The site-wide floor. If this assertion fails after a BASE_LAST_MOD bump,
-// update it; if it fails without one, dates have silently regressed.
-const FLOOR = "2026-08-16";
+const FLOOR = BASE_LAST_MOD;
 
 function tomorrow(): string {
   const d = new Date();

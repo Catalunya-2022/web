@@ -5,6 +5,7 @@ export const routing = defineRouting({
   locales: ["ca", "en", "es"],
   defaultLocale: "ca",
   localePrefix: "as-needed",
+  localeCookie: { secure: process.env.NODE_ENV === "production" },
   pathnames: ROUTE_CATALOG,
   // Disable next-intl's HTTP Link hreflang header. Its fallback for routes
   // outside the pathnames config (sphere/goal/action hierarchy) emits wrong

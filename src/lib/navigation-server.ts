@@ -16,10 +16,13 @@ import {
   getSupplementaryPageCopy,
 } from "@/lib/page-registry";
 import {
+  actionLabel,
   buildCanonicalActionId,
   buildCanonicalActionPath,
   buildCanonicalGoalPath,
   buildCanonicalSpherePath,
+  goalLabel,
+  sphereLabel,
 } from "@/lib/path-utils";
 
 export type NavItem = {
@@ -48,27 +51,18 @@ function buildGoalNavigation(
   goalId: GoalId,
   locale: Locale
 ): NavItem {
-  const t = uiStrings[locale];
   const goalSlug = buildCanonicalGoalPath(sphereId, goalId);
 
   return {
     slug: goalSlug,
-    title: getEntryTitle(manifest, goalSlug, `${t.goal} ${goalId}`),
+    title: getEntryTitle(manifest, goalSlug, goalLabel(goalId, locale)),
     children: Array.from({ length: ACTION_COUNTS[goalId] }, (_, index) => {
-      const actionNumber = index + 1;
-      const actionSlug = buildCanonicalActionPath(
-        sphereId,
-        goalId,
-        buildCanonicalActionId(goalId, actionNumber)
-      );
+      const actionId = buildCanonicalActionId(goalId, index + 1);
+      const actionSlug = buildCanonicalActionPath(sphereId, goalId, actionId);
 
       return {
         slug: actionSlug,
-        title: getEntryTitle(
-          manifest,
-          actionSlug,
-          `${t.action} ${goalId}.${actionNumber}`
-        ),
+        title: getEntryTitle(manifest, actionSlug, actionLabel(actionId, locale)),
       };
     }),
   };
@@ -79,12 +73,11 @@ function buildSphereNavigation(
   sphereId: SphereId,
   locale: Locale
 ): NavItem {
-  const t = uiStrings[locale];
   const sphereSlug = buildCanonicalSpherePath(sphereId);
 
   return {
     slug: sphereSlug,
-    title: getEntryTitle(manifest, sphereSlug, `${t.sphere} ${sphereId}`),
+    title: getEntryTitle(manifest, sphereSlug, sphereLabel(sphereId, locale)),
     children: SPHERE_GOALS[sphereId].map((goalId) =>
       buildGoalNavigation(manifest, sphereId, goalId, locale)
     ),
@@ -137,7 +130,7 @@ export async function getNavigation(locale: Locale): Promise<NavSection[]> {
   try {
     return await navigationPromise;
   } catch (error) {
-    navigationCache.delete(locale);
+    if (navigationCache.get(locale) === navigationPromise) navigationCache.delete(locale);
     throw error;
   }
 }

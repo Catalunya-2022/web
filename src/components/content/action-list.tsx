@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { getManifest } from "@/lib/content-manifest";
 import type { GoalId, SphereId } from "@/lib/data/constants";
-import { buildCanonicalGoalPath, localizeHref, parseHierarchySlug } from "@/lib/path-utils";
+import {
+  buildCanonicalGoalPath,
+  formatActionNumber,
+  localizeHref,
+  parseHierarchySlug,
+} from "@/lib/path-utils";
 import { renderInlineEmphasis } from "@/components/content/inline-emphasis";
 import { uiStrings } from "@/lib/ui-strings";
 import type { Locale } from "@/i18n/routing";
@@ -25,7 +30,7 @@ export async function ActionList({
       const parsed = parseHierarchySlug(slug);
       return {
         slug,
-        label: parsed?.kind === "action" ? parsed.actionId.replace("-", ".") : "",
+        label: parsed?.kind === "action" ? formatActionNumber(parsed.actionId) : "",
         title: entry?.title ?? slug,
       };
     });

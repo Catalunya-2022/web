@@ -6,15 +6,11 @@ import type { Locale } from "@/i18n/routing";
 export function PageActionBar({
   slug,
   locale,
-  title,
-  rawContent,
   citable,
   memberName,
 }: {
   slug: string;
   locale: Locale;
-  title: string;
-  rawContent: string;
   citable?: boolean;
   memberName?: string;
 }) {
@@ -24,13 +20,7 @@ export function PageActionBar({
       data-nosnippet=""
     >
       <BreadcrumbNav slug={slug} locale={locale} memberName={memberName} />
-      <CopyPageDropdown
-        title={title}
-        slug={slug}
-        rawContent={rawContent}
-        locale={locale}
-        citable={citable}
-      />
+      <CopyPageDropdown locale={locale} citable={citable} />
     </div>
   );
 }

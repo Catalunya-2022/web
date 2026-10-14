@@ -7,6 +7,7 @@ import { DownloadCard } from "@/components/content/download-card";
 import { ChatCard } from "@/components/content/chat-card";
 import { McpCard } from "@/components/content/mcp-card";
 import { heroItems } from "@/lib/data/hero-items";
+import { documentDownloadPath } from "@/lib/document-downloads";
 import { uiStrings } from "@/lib/ui-strings";
 import type { Locale } from "@/i18n/routing";
 
@@ -32,12 +33,12 @@ export function HeroSection({ locale }: { locale: Locale }) {
               <DownloadCard
                 title="PDF"
                 description={t.pdfDescription}
-                href={t.pdfHref}
+                href={documentDownloadPath(locale, "pdf")}
               />
               <DownloadCard
                 title="ePub"
                 description={t.epubDescription}
-                href={t.epubHref}
+                href={documentDownloadPath(locale, "epub")}
               />
             </div>
           </div>

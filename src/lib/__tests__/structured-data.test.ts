@@ -11,6 +11,7 @@ import {
   JsonLd,
 } from "../structured-data";
 import { uiStrings } from "../ui-strings";
+import { getMemberBySlug } from "../data/team-members";
 
 const DOI_URL = "https://doi.org/10.5281/zenodo.19500831";
 
@@ -63,6 +64,21 @@ describe("articleSchema", () => {
     expect(schema.citation.name).toContain("Catalunya 2022 - RESET");
     expect(schema.author.name).toBe("Catalunya 2022");
     expect(schema.publisher.name).toBe("Catalunya 2022");
+  });
+
+  it("stamps date-only dateModified with the Europe/Madrid offset of that date", () => {
+    expect(articleSchema({ ...base, dateModified: "2026-01-15" }).dateModified).toBe(
+      "2026-01-15T00:00:00+01:00"
+    );
+    expect(articleSchema({ ...base, dateModified: "2026-07-15" }).dateModified).toBe(
+      "2026-07-15T00:00:00+02:00"
+    );
+    expect(articleSchema({ ...base, dateModified: "2026-03-29" }).dateModified).toBe(
+      "2026-03-29T00:00:00+01:00"
+    );
+    expect(articleSchema({ ...base, dateModified: "2026-10-25" }).dateModified).toBe(
+      "2026-10-25T00:00:00+02:00"
+    );
   });
 
   it("author and publisher reference the shared Organization node without conflicts", () => {
@@ -143,10 +159,22 @@ describe("profilePageSchema", () => {
   it("wraps a Person as mainEntity with task-force membership", () => {
     const schema = profilePageSchema(base);
     expect(schema["@type"]).toBe("ProfilePage");
+    expect(schema.url).toBe(base.url);
     expect(schema.mainEntity["@type"]).toBe("Person");
     expect(schema.mainEntity["@id"]).toBe(
       "https://2022.cat/task-force/victoria-alsina#person"
     );
+  });
+
+  it("carries the member's localized role as jobTitle, omitted for unknown slugs", () => {
+    const member = getMemberBySlug("victoria-alsina")!;
+    expect(profilePageSchema(base).mainEntity.jobTitle).toBe(member.role.ca);
+    expect(profilePageSchema({ ...base, locale: "en" }).mainEntity.jobTitle).toBe(
+      member.role.en
+    );
+    expect(
+      profilePageSchema({ ...base, memberSlug: "nobody" }).mainEntity
+    ).not.toHaveProperty("jobTitle");
   });
 
   it("keeps the Person @id identical across all three locales", () => {
@@ -182,6 +210,9 @@ describe("profilePageSchema", () => {
     expect(
       profilePageSchema({ ...base, dateModified: "2026-08-15" }).dateModified
     ).toBe("2026-08-15T00:00:00+02:00");
+    expect(
+      profilePageSchema({ ...base, dateModified: "2026-12-01" }).dateModified
+    ).toBe("2026-12-01T00:00:00+01:00");
     expect(profilePageSchema(base).dateCreated).toBe(
       "2021-06-01T00:00:00+02:00"
     );

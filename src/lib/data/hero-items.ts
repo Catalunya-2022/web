@@ -26,7 +26,7 @@ const heroItems: HeroItem[] = [
     slug: "/sphere-1/goal-2",
   },
   {
-    text: { ca: "Per incorporar l'educació artística als centres d'aprenentatge.", en: "To incorporate artistic education into learning centres.", es: "Para incorporar la educación artística a los centros de aprendizaje." },
+    text: { ca: "Per incorporar l'educació artística als centres d'aprenentatge.", en: "To incorporate artistic education into learning centers.", es: "Para incorporar la educación artística a los centros de aprendizaje." },
     label: { ca: "l'Acció 1.7", en: "Action 1.7", es: "la Acción 1.7" },
     slug: "/sphere-1/goal-1/action-1-7",
   },

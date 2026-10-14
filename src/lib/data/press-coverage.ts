@@ -1,4 +1,4 @@
-import type { Trilingual } from "@/i18n/routing";
+import type { Locale, Trilingual } from "@/i18n/routing";
 
 export type PressArticle = {
   url: string;
@@ -6,6 +6,7 @@ export type PressArticle = {
   domain: string;
   title: string;
   date: string;
+  lang?: Locale;
   ogImage?: string;
   highlighted: boolean;
 };
@@ -33,6 +34,7 @@ export const youtubeVideo: {
   url: string;
   title: Trilingual;
   date: Trilingual;
+  uploadDate: string;
   location: string;
   description: Trilingual;
 } = {
@@ -49,6 +51,7 @@ export const youtubeVideo: {
     en: "June 10, 2021",
     es: "10 de junio de 2021",
   },
+  uploadDate: "2021-06-10T00:00:00+02:00",
   location: "Palau de la Generalitat, Barcelona",
   description: {
     ca: "El grup de treball va presentar les seves conclusions finals (3 àmbits, 12 objectius i 91 accions) al president Pere Aragonès al Palau de la Generalitat.",
@@ -69,6 +72,7 @@ export const pressSections: PressSection[] = [
         domain: "lavanguardia.com",
         title: "Los expertos diseñan un 'reset' para la Catalunya postcovid",
         date: "2021-06-10",
+        lang: "es",
         ogImage: "/press-images/lavanguardia-og.jpg",
         highlighted: true,
       },
@@ -78,6 +82,7 @@ export const pressSections: PressSection[] = [
         domain: "elpuntavui.cat",
         title: "Objectiu: fer un 'reset' al país",
         date: "2021-06-10",
+        lang: "ca",
         ogImage: "/press-images/elpuntavui-og.jpg",
         highlighted: true,
       },
@@ -88,6 +93,7 @@ export const pressSections: PressSection[] = [
         title:
           "El cap de l'Executiu ha rebut l'informe final del Grup de Treball Catalunya 2022",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -97,6 +103,7 @@ export const pressSections: PressSection[] = [
         title:
           "La guia del Govern per 'resetejar' el país: 91 mesures per l'era post Covid",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -106,6 +113,7 @@ export const pressSections: PressSection[] = [
         title:
           "De la sobirania energètica a ampliar el parc d'habitatge públic fins al 10%: les propostes dels experts per reactivar Catalunya",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -115,6 +123,7 @@ export const pressSections: PressSection[] = [
         title:
           "El comitè de savis per la Catalunya postCovid demana un 10% d'habitatge públic i repensar l'administració",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -124,6 +133,7 @@ export const pressSections: PressSection[] = [
         title:
           "Arribar al 10% d'habitatge públic i apostar per l'energia sostenible km.0, receptes de Catalunya 2022 per transformar el país",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -133,6 +143,7 @@ export const pressSections: PressSection[] = [
         title:
           "Victòria Alsina i Genís Roca ens presenten l'informe 'Reset. Crida per reactivar el país'",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -141,6 +152,7 @@ export const pressSections: PressSection[] = [
         domain: "viaempresa.cat",
         title: "Reset i Crida, el pla dels experts per reactivar Catalunya",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -150,6 +162,7 @@ export const pressSections: PressSection[] = [
         title:
           "Un grup d'experts proposen noranta-una accions per 'fer un reset' a la Catalunya de després de la pandèmia",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -159,6 +172,7 @@ export const pressSections: PressSection[] = [
         title:
           "Un grupo de expertos propone 91 acciones para 'reactivar' Catalunya tras la pandemia",
         date: "2021-06-10",
+        lang: "es",
         highlighted: false,
       },
       {
@@ -168,6 +182,7 @@ export const pressSections: PressSection[] = [
         title:
           "Un grup d'experts proposa 91 accions a la Generalitat per 'fer un reset' a la Catalunya de després de la pandèmia",
         date: "2021-06-10",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -177,6 +192,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Grup de Treball Catalunya 2022 lliura les seves conclusions al Govern de la Generalitat de Catalunya",
         date: "2021-06-11",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -186,6 +202,7 @@ export const pressSections: PressSection[] = [
         title:
           "Un grup d'experts proposa 91 accions per 'fer un reset' a la Catalunya postpandèmia",
         date: "2021-06-11",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -195,6 +212,7 @@ export const pressSections: PressSection[] = [
         title:
           "El 'reset' poscovid para reactivar Catalunya tras la pandemia",
         date: "2021-06-14",
+        lang: "es",
         highlighted: false,
       },
       {
@@ -204,6 +222,7 @@ export const pressSections: PressSection[] = [
         title:
           "Genís Roca, coordinador del grup Catalunya 2022: 'És una agenda que interpel·la el Govern en aquest primer any de legislatura'",
         date: "2021-06-15",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -220,6 +239,7 @@ export const pressSections: PressSection[] = [
         domain: "elmondedema.cat",
         title: "#62 Reset a la Catalunya 2022",
         date: "2021-06-20",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -229,6 +249,7 @@ export const pressSections: PressSection[] = [
         title:
           "«En 10 anys s'haurien de fer 35.000 habitatges públics a Girona»",
         date: "2021-06-27",
+        lang: "ca",
         highlighted: false,
       },
     ],
@@ -245,6 +266,7 @@ export const pressSections: PressSection[] = [
         title:
           "El grupo de trabajo Catalunya 2022 llama a toda la comunidad a participar de un plan postcrisis",
         date: "2020-07-13",
+        lang: "es",
         ogImage: "/press-images/europapress-og.jpg",
         highlighted: true,
       },
@@ -255,6 +277,7 @@ export const pressSections: PressSection[] = [
         title:
           "Torra se rodea de 30 expertos para definir un 'futuro disruptivo' para Cataluña en 2022",
         date: "2020-06-02",
+        lang: "es",
         ogImage: "/press-images/expansion-og.jpg",
         highlighted: true,
       },
@@ -265,6 +288,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Govern movilizará a 400 expertos para dibujar una estrategia catalana postCovid",
         date: "2020-06-02",
+        lang: "es",
         highlighted: false,
       },
       {
@@ -274,6 +298,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Govern impulsa el grup d'experts 'Catalunya 2022' per dissenyar la sortida a la crisi del coronavirus",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -282,6 +307,7 @@ export const pressSections: PressSection[] = [
         domain: "publico.es",
         title: "Catalunya 2022: el repte de traçar un futur incert",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -291,6 +317,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Govern anuncia el plan Catalunya 2022 para definir el futuro tras la pandemia",
         date: "2020-06-02",
+        lang: "es",
         highlighted: false,
       },
       {
@@ -300,6 +327,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Govern posa en marxa un comitè d'experts per definir la Catalunya post-pandèmia",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -309,6 +337,7 @@ export const pressSections: PressSection[] = [
         title:
           "El Govern crea un grup de treball per dibuixar la 'Catalunya del 2022'",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -318,6 +347,7 @@ export const pressSections: PressSection[] = [
         title:
           "El govern crea el grup Catalunya 2022 per dissenyar la sortida de la crisi del coronavirus",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -327,6 +357,7 @@ export const pressSections: PressSection[] = [
         title:
           "Una trentena d'experts dissenyaran com ha de ser la Catalunya post-Covid",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -336,6 +367,7 @@ export const pressSections: PressSection[] = [
         title:
           "Els 30 experts que el Govern ha mobilitzat per fer l'estratègia post-coronavirus",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -345,6 +377,7 @@ export const pressSections: PressSection[] = [
         title:
           "Genís Roca liderarà Catalunya 2022, grup d'experts per superar la crisi per la COVID",
         date: "2020-06-02",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -361,6 +394,7 @@ export const pressSections: PressSection[] = [
         domain: "ccma.cat",
         title: "Genís Roca i Victòria Alsina, al 'Revolució 4.0'",
         date: "2020-06-14",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -369,6 +403,7 @@ export const pressSections: PressSection[] = [
         domain: "ccma.cat",
         title: "Entrevista Genís Roca, al 'MÉS_324'",
         date: "2020-06-26",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -378,6 +413,7 @@ export const pressSections: PressSection[] = [
         title:
           "'La pandemia es un acelerador de reformas estructurales', entrevista a Genís Roca i Victòria Alsina",
         date: "2020-07-11",
+        lang: "es",
         highlighted: false,
       },
       {
@@ -387,6 +423,7 @@ export const pressSections: PressSection[] = [
         title:
           "El grup de treball Catalunya 2022 fa una crida a la societat per recollir propostes de sortida a la crisi del covid",
         date: "2020-07-13",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -396,6 +433,7 @@ export const pressSections: PressSection[] = [
         title:
           "El grup Catalunya 2022 demana propostes a la societat per dissenyar la sortida a la crisi del coronavirus",
         date: "2020-07-13",
+        lang: "ca",
         highlighted: false,
       },
       {
@@ -405,6 +443,7 @@ export const pressSections: PressSection[] = [
         title:
           "Crida dels experts del Govern a institucions i entitats per bastir l'horitzó Catalunya 2022",
         date: "2020-07-13",
+        lang: "ca",
         highlighted: false,
       },
     ],

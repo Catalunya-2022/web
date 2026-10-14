@@ -24,7 +24,6 @@ describe("truncateToEncodedLength", () => {
     const result = truncateToEncodedLength(input, 30);
     expect(encodeURIComponent(result).length).toBeLessThanOrEqual(30);
     // Result must be decodable (no partial multibyte sequences)
-    expect(() => decodeURIComponent(encodeURIComponent(result))).not.toThrow();
     expect(decodeURIComponent(encodeURIComponent(result))).toBe(result);
   });
 
@@ -32,7 +31,7 @@ describe("truncateToEncodedLength", () => {
     const input = "Acción para mejorar la situación económica española";
     const result = truncateToEncodedLength(input, 40);
     expect(encodeURIComponent(result).length).toBeLessThanOrEqual(40);
-    expect(() => decodeURIComponent(encodeURIComponent(result))).not.toThrow();
+    expect(decodeURIComponent(encodeURIComponent(result))).toBe(result);
   });
 
   it("handles multibyte emoji without partial sequences", () => {
@@ -40,7 +39,7 @@ describe("truncateToEncodedLength", () => {
     const input = "Test 🎉🎊🎈 end";
     const result = truncateToEncodedLength(input, 20);
     expect(encodeURIComponent(result).length).toBeLessThanOrEqual(20);
-    expect(() => decodeURIComponent(encodeURIComponent(result))).not.toThrow();
+    expect(decodeURIComponent(encodeURIComponent(result))).toBe(result);
   });
 
   it("returns empty string when even one char exceeds budget", () => {

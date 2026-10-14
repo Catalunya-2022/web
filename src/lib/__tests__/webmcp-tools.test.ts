@@ -197,7 +197,7 @@ describe("get_section", () => {
       pageData: { slug: "/sphere-1/goal-2", title: "Objectiu 2", rawContent: "raw" },
     });
     const current = (await call("get_section", {})) as WebMcpSectionResult;
-    expect(fetchText).toHaveBeenLastCalledWith("/ambit-1/objectiu-2.md");
+    expect(fetchText).toHaveBeenLastCalledWith("/ambit-1/objectiu-2.md", expect.any(AbortSignal));
     expect(current.url).toBe("https://2022.cat/ambit-1/objectiu-2");
     expect(current.markdown).toContain("Body text.");
     expect(current.title).toBe("Title of /ambit-1/objectiu-2.md");
@@ -205,7 +205,7 @@ describe("get_section", () => {
     const other = (await call("get_section", {
       slug: "sphere-2/goal-6/action-6-1",
     })) as WebMcpSectionResult;
-    expect(fetchText).toHaveBeenLastCalledWith("/ambit-2/objectiu-6/accio-6-1.md");
+    expect(fetchText).toHaveBeenLastCalledWith("/ambit-2/objectiu-6/accio-6-1.md", expect.any(AbortSignal));
     expect(other.url).toBe("https://2022.cat/ambit-2/objectiu-6/accio-6-1");
     expect(other.slug).toBe("/sphere-2/goal-6/action-6-1");
   });
@@ -231,16 +231,26 @@ describe("get_section", () => {
   it("rebuilds non-canonical document slugs so fetches land on real mirrors", async () => {
     const en = await setup("en");
     const rebuilt = (await en.call("get_section", { slug: "sphere-0x1/goal-1" })) as WebMcpSectionResult;
-    expect(en.fetchText).toHaveBeenLastCalledWith("/en/sphere-1/goal-1.md");
+    expect(en.fetchText).toHaveBeenLastCalledWith("/en/sphere-1/goal-1.md", expect.any(AbortSignal));
     expect(rebuilt.slug).toBe("/sphere-1/goal-1");
 
     const ca = await setup("ca");
     await ca.call("get_section", { slug: "ambito-1" });
-    expect(ca.fetchText).toHaveBeenLastCalledWith("/ambit-1.md");
+    expect(ca.fetchText).toHaveBeenLastCalledWith("/ambit-1.md", expect.any(AbortSignal));
 
     const es = await setup("es");
     await es.call("get_section", { slug: "/es/ambit-1/objectiu-2" });
-    expect(es.fetchText).toHaveBeenLastCalledWith("/es/ambito-1/objetivo-2.md");
+    expect(es.fetchText).toHaveBeenLastCalledWith("/es/ambito-1/objetivo-2.md", expect.any(AbortSignal));
+  });
+
+  it("forwards the execute signal to the mirror fetch and tolerates its absence", async () => {
+    const { byName, fetchText } = await setup("en");
+    const controller = new AbortController();
+    await byName.get_section.execute({ slug: "introduction" }, { signal: controller.signal });
+    expect(fetchText).toHaveBeenLastCalledWith("/en/introduction.md", controller.signal);
+    const bare = (await byName.get_section.execute({ slug: "introduction" })) as WebMcpSectionResult;
+    expect(fetchText).toHaveBeenLastCalledWith("/en/introduction.md", undefined);
+    expect(bare.slug).toBe("/introduction");
   });
 
   it("refuses non-document pages with their URL and never fetches outside the document set (AE4)", async () => {

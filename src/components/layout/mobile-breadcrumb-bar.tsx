@@ -76,6 +76,9 @@ function MobileCopyButton({ locale }: { locale: Locale }) {
           onPrint={handlePrint}
         />
       </DropdownMenu>
+      <span role="status" aria-live="polite" className="sr-only">
+        {isCopied ? copiedMessage : ""}
+      </span>
     </div>
   );
 }

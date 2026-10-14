@@ -177,9 +177,12 @@ export function HeroTypewriter({ items, locale }: { items: HeroItem[]; locale: L
 
   return (
     <div>
-      <h1 className="min-h-[5.5em] text-4xl leading-tight tracking-tight sm:min-h-[5em] sm:text-5xl md:min-h-[4em] md:text-6xl">
-        <span className="font-extrabold">RESET:</span>{" "}
-        <span className="font-light">{displayedText}</span>
+      <h1
+        className="min-h-[5.5em] text-4xl leading-tight tracking-tight sm:min-h-[5em] sm:text-5xl md:min-h-[4em] md:text-6xl"
+        aria-label={`RESET: ${fullText}`}
+      >
+        <span className="font-extrabold" aria-hidden="true">RESET:</span>{" "}
+        <span className="font-light" aria-hidden="true">{displayedText}</span>
         {showCursor && (
           <span
             className="ml-0.5 inline-block w-[3px] align-baseline text-primary"

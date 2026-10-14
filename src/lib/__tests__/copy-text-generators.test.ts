@@ -81,6 +81,7 @@ describe("generateMcpPageText", () => {
 
     expect(text).toContain("## What is MCP?");
     expect(text).toContain(mcpIntroText.en);
+    expect(text).toContain("\n`https://mcp.2022.cat`\n");
     expect(text).toContain("## How to Connect");
     expect(text).toContain("### ChatGPT");
     expect(text).toContain("```text");

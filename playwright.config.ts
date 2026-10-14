@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3201;
+// Override with PLAYWRIGHT_PORT when two checkouts run the suite at once.
+const PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3201);
 const HOST = "127.0.0.1";
 const baseURL = `http://${HOST}:${PORT}`;
 const readinessURL = `${baseURL}/en`;
@@ -13,6 +14,9 @@ export default defineConfig({
   // functional assertions and skips the screenshot comparisons.
   ignoreSnapshots: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // The hosted runner reports 2 cores, where Playwright's default is a single
+  // worker; two workers halve the e2e wall-clock there (measured 2026-10-14).
+  workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,

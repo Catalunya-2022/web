@@ -35,9 +35,9 @@ export function SupplementaryPageShell({
       <PrintHeader locale={locale} />
       <JsonLd data={breadcrumbListSchema([
         { name: t.home, url: buildAbsoluteUrl("/", locale) },
-        { name: title, url: buildAbsoluteUrl(slug, locale) },
+        { name: slug === "/action-plan" ? copy.pageTitle : copy.title, url: buildAbsoluteUrl(slug, locale) },
       ])} />
-      <PageActionBar slug={slug} locale={locale} title={title} rawContent={rawContent} />
+      <PageActionBar slug={slug} locale={locale} />
       <PageHeader subtitle={subtitle} title={title} description={resolvedDescription} />
       {children}
       <NavCards slug={slug} locale={locale} />

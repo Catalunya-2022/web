@@ -1,4 +1,5 @@
-import type { Trilingual } from "@/i18n/routing";
+import type { Locale, Trilingual } from "@/i18n/routing";
+import { documentDownloadPath, type DocumentFormat } from "@/lib/document-downloads";
 
 export type ResourceIconName = "file-down" | "book-open" | "presentation" | "scale" | "github" | "server" | "bar-chart-3" | "message-circle" | "archive";
 
@@ -42,6 +43,16 @@ export type ResourceSection = {
   items: ResourceItem[];
 };
 
+const FULL_DOCUMENT_LANGS: Array<{ lang: string; locale: Locale }> = [
+  { lang: "Català", locale: "ca" },
+  { lang: "Español", locale: "es" },
+  { lang: "English", locale: "en" },
+];
+
+function fullDocumentDownloads(format: DocumentFormat): ResourceDownload[] {
+  return FULL_DOCUMENT_LANGS.map(({ lang, locale }) => ({ lang, href: documentDownloadPath(locale, format) }));
+}
+
 export const resourceSections: ResourceSection[] = [
   {
     id: "documents",
@@ -57,11 +68,7 @@ export const resourceSections: ResourceSection[] = [
         title: { ca: "Document Complet", en: "Full Document", es: "Documento Completo" },
         description: "PDF",
         icon: "file-down",
-        downloads: [
-          { lang: "Català", href: "/documents/catalunya-2022-ca.pdf" },
-          { lang: "Español", href: "/documents/catalunya-2022-es.pdf" },
-          { lang: "English", href: "/documents/catalunya-2022-en.pdf" },
-        ],
+        downloads: fullDocumentDownloads("pdf"),
       },
       {
         title: { ca: "Resum Executiu", en: "Executive Summary", es: "Resumen Ejecutivo" },
@@ -77,21 +84,13 @@ export const resourceSections: ResourceSection[] = [
         title: { ca: "Document Complet", en: "Full Document", es: "Documento Completo" },
         description: "EPUB",
         icon: "book-open",
-        downloads: [
-          { lang: "Català", href: "/documents/catalunya-2022-ca.epub" },
-          { lang: "Español", href: "/documents/catalunya-2022-es.epub" },
-          { lang: "English", href: "/documents/catalunya-2022-en.epub" },
-        ],
+        downloads: fullDocumentDownloads("epub"),
       },
       {
         title: { ca: "Document Complet", en: "Full Document", es: "Documento Completo" },
         description: "Markdown",
         icon: "file-down",
-        downloads: [
-          { lang: "Català", href: "/documents/catalunya-2022-ca.md" },
-          { lang: "Español", href: "/documents/catalunya-2022-es.md" },
-          { lang: "English", href: "/documents/catalunya-2022-en.md" },
-        ],
+        downloads: fullDocumentDownloads("md"),
       },
       {
         title: { ca: "Arxiu Permanent", en: "Permanent Archive", es: "Archivo Permanente" },
@@ -140,7 +139,7 @@ export const resourceSections: ResourceSection[] = [
     title: { ca: "Registres Oficials", en: "Official Records", es: "Registros Oficiales" },
     description: {
       ca: "Documents oficials del Govern relacionats amb la creació i el mandat del Grup de Treball Catalunya 2022.",
-      en: "Official government documents related to the creation and mandate of the Catalunya 2022 task force.",
+      en: "Official government documents related to the creation and mandate of the Catalunya 2022 Task Force.",
       es: "Documentos oficiales del Gobierno relacionados con la creación y el mandato del Grupo de Trabajo Catalunya 2022.",
     },
     items: [
@@ -227,7 +226,7 @@ export const resourceSections: ResourceSection[] = [
   {
     id: "ai",
     label: { ca: "Intel·ligència Artificial", en: "Artificial Intelligence", es: "Inteligencia Artificial" },
-    title: { ca: "Explora el Document", en: "Explore the Document", es: "Explora el Documento" },
+    title: { ca: "Exploreu el Document", en: "Explore the Document", es: "Explora el Documento" },
     description: {
       ca: "Utilitza intel·ligència artificial per explorar, resumir i analitzar les 91 propostes del document Catalunya 2022.",
       en: "Use artificial intelligence to explore, summarize, and analyze the 91 proposals in the Catalunya 2022 document.",
@@ -237,7 +236,7 @@ export const resourceSections: ResourceSection[] = [
       {
         title: { ca: "Servidor MCP", en: "MCP Server", es: "Servidor MCP" },
         description: {
-          ca: "Connecta qualsevol assistent d'IA compatible amb MCP al document Catalunya 2022",
+          ca: "Connecteu qualsevol assistent d'IA compatible amb MCP al document Catalunya 2022",
           en: "Connect any MCP-compatible AI assistant to the Catalunya 2022 document",
           es: "Conecta cualquier asistente de IA compatible con MCP al documento Catalunya 2022",
         },
@@ -247,7 +246,7 @@ export const resourceSections: ResourceSection[] = [
       {
         title: { ca: "Custom GPT", en: "Custom GPT", es: "Custom GPT" },
         description: {
-          ca: "Xateja directament a ChatGPT amb un assistent personalitzat que coneix tot el document",
+          ca: "Xategeu directament a ChatGPT amb un assistent personalitzat que coneix tot el document",
           en: "Chat directly in ChatGPT with a custom assistant that knows the entire document",
           es: "Chatea directamente en ChatGPT con un asistente personalizado que conoce todo el documento",
         },

@@ -1,9 +1,9 @@
 import fs from "fs";
-import path from "path";
 import type { Locale } from "@/i18n/routing";
 import { teamMembers } from "@/lib/data/team-members";
 import {
   extractHeadings,
+  getContentDir,
   slugToFilePath,
   truncateAtWordBoundary,
   stripMarkdownFormatting,
@@ -13,7 +13,7 @@ import {
   getSupplementaryPageCopy,
   SUPPLEMENTARY_PAGE_SLUGS,
 } from "@/lib/page-registry";
-import { parseHierarchySlug } from "@/lib/path-utils";
+import { actionLabel, goalLabel, parseHierarchySlug, sphereLabel } from "@/lib/path-utils";
 import { uiStrings } from "@/lib/ui-strings";
 import type { SearchDocument } from "@/lib/search-engine";
 
@@ -33,13 +33,12 @@ function buildSearchBreadcrumb(
   slug: string,
   locale: Locale,
 ): string {
-  const t = uiStrings[locale];
   const parsed = parseHierarchySlug(slug);
   if (!parsed) return "";
 
-  const trail = [t.actionPlan, `${t.sphere} ${parsed.sphereId}`];
-  if (parsed.kind !== "sphere") trail.push(`${t.goal} ${parsed.goalId}`);
-  if (parsed.kind === "action") trail.push(`${t.action} ${parsed.actionId.replace("-", ".")}`);
+  const trail = [uiStrings[locale].actionPlan, sphereLabel(parsed.sphereId, locale)];
+  if (parsed.kind !== "sphere") trail.push(goalLabel(parsed.goalId, locale));
+  if (parsed.kind === "action") trail.push(actionLabel(parsed.actionId, locale));
 
   return trail.join(" › ");
 }
@@ -47,7 +46,7 @@ function buildSearchBreadcrumb(
 export function buildContentSearchDocument(
   slug: string,
   locale: Locale,
-  contentDir = path.join(process.cwd(), "content", locale),
+  contentDir = getContentDir(locale),
 ): SearchDocument {
   const filePath = slugToFilePath(slug, contentDir);
 

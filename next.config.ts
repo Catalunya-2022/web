@@ -111,6 +111,7 @@ const nextConfig: NextConfig = {
             // Corpus filenames stay stable across deploys, so prefer a short TTL over immutable caching.
             value: "public, max-age=3600, stale-while-revalidate=86400",
           },
+          { key: "X-Robots-Tag", value: "noindex" },
         ],
       },
       {

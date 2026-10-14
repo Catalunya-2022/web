@@ -14,8 +14,9 @@ import {
   type WebMcpToolName,
   type WebMcpToolSpec,
 } from "@/lib/data/mcp";
+import { documentDownloadUrl } from "@/lib/document-downloads";
 import { BASE_URL, buildAbsoluteUrl } from "@/lib/metadata";
-import { isStaticContentSlug, SUPPLEMENTARY_PAGE_SLUGS } from "@/lib/page-registry";
+import { getSphereIds, isStaticContentSlug, SUPPLEMENTARY_PAGE_SLUGS } from "@/lib/page-registry";
 import {
   buildCanonicalActionId,
   buildCanonicalActionPath,
@@ -43,7 +44,7 @@ export type WebMcpDeps = {
   ) => Promise<SearchResult[]>;
   ensureIndex: (locale: Locale) => Promise<boolean>;
   getCorpusDocuments: (locale: Locale) => SearchDocument[] | null;
-  fetchText: (url: string) => Promise<string>;
+  fetchText: (url: string, signal?: AbortSignal) => Promise<string>;
   onSuccess?: (name: WebMcpToolName) => void;
 };
 
@@ -99,14 +100,14 @@ export type WebMcpMetadataResult = {
   mcpServer: string;
 };
 
-export type WebMcpToolResult =
+type WebMcpToolResult =
   | WebMcpError
   | WebMcpSearchResult
   | WebMcpSectionResult
   | WebMcpProposalsResult
   | WebMcpMetadataResult;
 
-export type WebMcpTool = Omit<ModelContextTool, "name" | "execute"> & {
+type WebMcpTool = Omit<ModelContextTool, "name" | "execute"> & {
   name: WebMcpToolName;
   execute: (
     input: Record<string, unknown>,
@@ -119,6 +120,8 @@ const SEARCH_POOL_LIMIT = 200;
 const SECTION_TEXT_CEILING = 20_000;
 const SITE_HOST = new URL(BASE_URL).hostname;
 const SITE_HOSTS = new Set([SITE_HOST, `www.${SITE_HOST}`]);
+const MAX_SPHERE_ID = Math.max(...getSphereIds());
+const MAX_GOAL_ID = Math.max(...Object.values(SPHERE_GOALS).flat());
 const DOCUMENT_TYPES: SearchDocument["type"][] = ["sphere", "goal", "action", "content"];
 type SearchScope = "sphere" | "goal" | "action" | "static";
 const SCOPE_TYPES: Record<SearchScope, SearchDocument["type"][]> = {
@@ -146,7 +149,7 @@ function isError(result: WebMcpToolResult): result is WebMcpError {
   return "error" in result;
 }
 
-export function buildInputSchema(spec: WebMcpToolSpec, locale: Locale): Record<string, unknown> {
+function buildInputSchema(spec: WebMcpToolSpec, locale: Locale): Record<string, unknown> {
   const properties: Record<string, unknown> = {};
   const required: string[] = [];
   for (const param of spec.params) {
@@ -256,8 +259,11 @@ async function loadCorpus(deps: WebMcpDeps): Promise<SearchDocument[] | null> {
 }
 
 function localizedDownloads(locale: Locale): WebMcpMetadataResult["downloads"] {
-  const base = `${BASE_URL}/documents/catalunya-2022-${locale}`;
-  return { pdf: `${base}.pdf`, epub: `${base}.epub`, markdown: `${base}.md` };
+  return {
+    pdf: documentDownloadUrl(locale, "pdf"),
+    epub: documentDownloadUrl(locale, "epub"),
+    markdown: documentDownloadUrl(locale, "md"),
+  };
 }
 
 async function searchDocument(input: Record<string, unknown>, deps: WebMcpDeps): Promise<WebMcpToolResult> {
@@ -300,26 +306,34 @@ async function searchDocument(input: Record<string, unknown>, deps: WebMcpDeps):
   };
 }
 
-async function readDocumentSection(canonical: string, deps: WebMcpDeps): Promise<WebMcpToolResult> {
+async function readDocumentSection(
+  canonical: string,
+  deps: WebMcpDeps,
+  signal?: AbortSignal,
+): Promise<WebMcpToolResult> {
   const { locale } = deps;
   const url = buildAbsoluteUrl(canonical, locale);
   let text: string;
   try {
-    text = await deps.fetchText(`${localizeHref(canonical, locale)}.md`);
+    text = await deps.fetchText(`${localizeHref(canonical, locale)}.md`, signal);
   } catch {
     return fail(message("mirrorUnavailable", locale, { url }));
   }
   return sectionResult(canonical, url, text, locale);
 }
 
-async function getSection(input: Record<string, unknown>, deps: WebMcpDeps): Promise<WebMcpToolResult> {
+async function getSection(
+  input: Record<string, unknown>,
+  deps: WebMcpDeps,
+  signal?: AbortSignal,
+): Promise<WebMcpToolResult> {
   const { locale } = deps;
   const requested = typeof input.slug === "string" ? input.slug.trim() : "";
   if (!requested) {
     const page = deps.getPageData();
     if (!page) return fail(message("noCurrentPage", locale));
     const canonical = normalizeSectionSlug(page.slug);
-    if (canonical) return readDocumentSection(canonical, deps);
+    if (canonical) return readDocumentSection(canonical, deps, signal);
     return {
       slug: page.slug,
       title: page.title,
@@ -330,7 +344,7 @@ async function getSection(input: Record<string, unknown>, deps: WebMcpDeps): Pro
   }
   const canonical = canonicalizePath(requested);
   const documentSlug = canonical ? toDocumentSlug(canonical) : null;
-  if (documentSlug) return readDocumentSection(documentSlug, deps);
+  if (documentSlug) return readDocumentSection(documentSlug, deps, signal);
   if (canonical && isSitePage(canonical)) {
     return fail(
       message("notReadable", locale, { slug: requested, url: buildAbsoluteUrl(canonical, locale) }),
@@ -344,8 +358,8 @@ async function listProposals(input: Record<string, unknown>, deps: WebMcpDeps): 
   const { locale } = deps;
   const sphereId = parseId(input.sphereId);
   const goalId = parseId(input.goalId);
-  if (!inRange(sphereId, 3)) return fail(message("invalidSphere", locale));
-  if (!inRange(goalId, 12)) return fail(message("invalidGoal", locale));
+  if (!inRange(sphereId, MAX_SPHERE_ID)) return fail(message("invalidSphere", locale));
+  if (!inRange(goalId, MAX_GOAL_ID)) return fail(message("invalidGoal", locale));
   if (
     sphereId !== undefined &&
     goalId !== undefined &&
@@ -390,7 +404,7 @@ async function getDocumentMetadata(deps: WebMcpDeps): Promise<WebMcpToolResult> 
   if (!docs) return fail(message("indexUnavailable", locale));
   const titles = new Map(docs.map((doc) => [doc.slug, doc.title]));
   const titleOf = (slug: string) => titles.get(slug) ?? slug;
-  const spheres = (Object.keys(SPHERE_GOALS).map(Number) as SphereId[]).map((sphereId) => {
+  const spheres = getSphereIds().map((sphereId) => {
     const sphereSlug = buildCanonicalSpherePath(sphereId);
     return {
       id: sphereId,
@@ -424,7 +438,7 @@ async function getDocumentMetadata(deps: WebMcpDeps): Promise<WebMcpToolResult> 
 
 const HANDLERS: Record<
   WebMcpToolName,
-  (input: Record<string, unknown>, deps: WebMcpDeps) => Promise<WebMcpToolResult>
+  (input: Record<string, unknown>, deps: WebMcpDeps, signal?: AbortSignal) => Promise<WebMcpToolResult>
 > = {
   search_document: searchDocument,
   get_section: getSection,
@@ -439,8 +453,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     description: spec.description[deps.locale],
     inputSchema: buildInputSchema(spec, deps.locale),
     annotations: { readOnlyHint: true },
-    execute: async (input) => {
-      const result = await HANDLERS[spec.name](input ?? {}, deps);
+    execute: async (input, options) => {
+      const result = await HANDLERS[spec.name](input ?? {}, deps, options?.signal);
       if (!isError(result)) deps.onSuccess?.(spec.name);
       return result;
     },

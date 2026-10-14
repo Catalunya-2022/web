@@ -42,8 +42,6 @@ type UiStrings = {
   heroContextConvened: string;
   heroNinetyOneActions: string;
   heroContextActions: string;
-  pdfHref: string;
-  epubHref: string;
   actionPlanSubtitle: string;
   actionPlanTitle: string;
   actionPlanDescription: string;
@@ -98,6 +96,8 @@ type UiStrings = {
   ogTagline: string;
   notFoundHeading: string;
   notFoundBody: string;
+  notFoundBodyHierarchy: string;
+  notFoundSearch: string;
   goHome: string;
   exploreActionPlan: string;
   siteMap: string;
@@ -187,10 +187,8 @@ export const uiStrings: Record<Locale, UiStrings> = {
     heroNinetyOneActions: "noranta-una accions concretes",
     heroContextActions:
       "que abasten la societat, l'economia i el sector públic, plasmades per gairebé 400 experts col·laboradors i més de 1.400 propostes ciutadanes. Desenvolupat al llarg de dues legislatures, per sobre de les línies de partit, el document ja ha inspirat accions governamentals posteriors. Un full de ruta per a una Catalunya més justa, més competitiva i millor governada.",
-    pdfHref: "/documents/catalunya-2022-ca.pdf",
-    epubHref: "/documents/catalunya-2022-ca.epub",
     actionPlanSubtitle: "Pla d'Acció",
-    actionPlanTitle: "Reset: Crida per reactivar el país",
+    actionPlanTitle: "RESET: Crida per reactivar el país",
     actionPlanDescription:
       "El pla d'acció Catalunya 2022 s'organitza en tres àmbits (societat, economia i sector públic), amb 12 objectius i 91 accions concretes. Exploreu l'estructura completa a continuació o cerqueu un tema específic.",
     sphere: "Àmbit",
@@ -249,12 +247,14 @@ export const uiStrings: Record<Locale, UiStrings> = {
     darkMode: "Mode fosc",
     systemMode: "Mode del sistema",
     openGPTApp: "Custom GPT",
-    chatCardDescription: "Xateja sobre el document a ChatGPT",
+    chatCardDescription: "Xategeu sobre el document a ChatGPT",
 
     homeOgSubtitle: "3 àmbits · 12 objectius · 91 accions",
     ogTagline: "Crida per reactivar el país",
-    notFoundHeading: "404: Aquesta acció encara no s'ha proposat",
-    notFoundBody: "No hem trobat aquest àmbit, objectiu o acció al document Catalunya 2022. Potser el podríeu proposar per a la pròxima iteració?",
+    notFoundHeading: "404: Pàgina no trobada",
+    notFoundBody: "No hem trobat cap pàgina en aquesta adreça. Comproveu l'enllaç o cerqueu al document Catalunya 2022.",
+    notFoundBodyHierarchy: "No hem trobat aquest àmbit, objectiu o acció al document Catalunya 2022. Potser el podríeu proposar per a la pròxima iteració?",
+    notFoundSearch: "Cercar al document",
     goHome: "Anar a l'inici",
     exploreActionPlan: "Explorar el pla d'acció",
     siteMap: "Mapa del web",
@@ -263,36 +263,36 @@ export const uiStrings: Record<Locale, UiStrings> = {
     siteDescription: "Un pla estratègic per reactivar Catalunya, creat pel Grup de Treball Catalunya 2022",
     opensInNewTab: "(s'obre en una pestanya nova)",
     orientationBodyAction:
-      "Estàs llegint una de les **91 accions** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
+      "Esteu llegint una de les **91 accions** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
     orientationBodyGoal:
-      "Estàs llegint un dels **12 objectius** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
+      "Esteu llegint un dels **12 objectius** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
     orientationBodySphere:
-      "Estàs llegint un dels **3 àmbits** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
-    orientationCtaPrefix: "Comença per la",
+      "Esteu llegint un dels **3 àmbits** de **{title}**, un full de ruta elaborat per un grup de treball de 30 experts de la societat civil.",
+    orientationCtaPrefix: "Comenceu per la",
     orientationCtaIntro: "introducció",
     orientationCtaMiddle: "o el",
     orientationCtaSummary: "resum executiu",
     orientationCtaSuffix: "per tenir la visió completa.",
-    orientationDismiss: "No ho tornis a mostrar",
+    orientationDismiss: "No ho torneu a mostrar",
     close: "Tancar",
     toggleSidebar: "Alternar barra lateral",
-    expandCollapse: "Desplega o replega",
+    expandCollapse: "Desplegueu o replegueu",
     navigation: "Navegació",
     breadcrumbNav: "Fil d'Ariadna",
     errorHeading: "Alguna cosa ha anat malament",
     errorBody: "S'ha produït un error inesperat. Si us plau, torneu-ho a provar.",
-    errorRetry: "Torna-ho a provar",
+    errorRetry: "Torneu-ho a provar",
     mcpSubtitle: "Conversa amb el document via IA",
     mcpTitle: "Servidor MCP Catalunya 2022",
     mcpPageTitle: "Servidor MCP",
     mcpDescription:
-      "Connecta qualsevol assistent d'IA compatible amb MCP al document Catalunya 2022. Sense autenticació, obert a tothom, persones i agents d'IA.",
+      "Connecteu qualsevol assistent d'IA compatible amb MCP al document Catalunya 2022. Sense autenticació, obert a tothom, persones i agents d'IA.",
     mcpCardTitle: "Servidor MCP",
-    mcpCardDescription: "Connecta qualsevol assistent d'IA al document",
+    mcpCardDescription: "Connecteu qualsevol assistent d'IA al document",
     mcpCopyCommand: "Copiar comanda",
     mcpCopyQuestion: "Copiar pregunta",
     mcpTryAsking:
-      "Un cop connectat, pots preguntar qualsevol cosa sobre el document al teu assistent d'IA. Comença amb preguntes senzilles per explorar l'estructura, o aprofundeix amb anàlisis i referències creuades entre àmbits, objectius i propostes.",
+      "Un cop connectat, podeu preguntar qualsevol cosa sobre el document al vostre assistent d'IA. Comenceu amb preguntes senzilles per explorar l'estructura, o aprofundiu amb anàlisis i referències creuades entre àmbits, objectius i propostes.",
     printPage: "Imprimir pàgina",
     printPageDescription: "Imprimir en format net sense navegació",
     share: "Compartir",
@@ -348,14 +348,12 @@ export const uiStrings: Record<Locale, UiStrings> = {
       "The result: three spheres of transformation, twelve goals, and",
     heroOfficiallyConvened: "officially convened",
     heroContextConvened:
-      "a task force of thirty experts spanning academia, business, science, culture, and public administration to issue a call for a national debate centred on action.",
+      "a task force of thirty experts spanning academia, business, science, culture, and public administration to issue a call for a national debate centered on action.",
     heroNinetyOneActions: "ninety-one concrete actions",
     heroContextActions:
       "spanning society, economy, and the public sector, shaped by nearly 400 contributing experts and over 1,400 citizen proposals. Developed across two terms of office, beyond party lines, the document has already inspired subsequent government action. A blueprint for a fairer, more competitive, and better-governed Catalonia.",
-    pdfHref: "/documents/catalunya-2022-en.pdf",
-    epubHref: "/documents/catalunya-2022-en.epub",
     actionPlanSubtitle: "Action Plan",
-    actionPlanTitle: "Reset: Call to reactivate Catalonia",
+    actionPlanTitle: "RESET: Call to reactivate Catalonia",
     actionPlanDescription:
       "The Catalunya 2022 action plan is organized into three spheres (Society, Economy, and the Public Sector), with 12 goals and 91 concrete actions. Explore the full structure below or search for a specific topic.",
     sphere: "Sphere",
@@ -364,7 +362,7 @@ export const uiStrings: Record<Locale, UiStrings> = {
     taskForceSubtitle: "30 Experts from Civil Society",
     taskForceTitle: "Task Force",
     taskForceDescription:
-      "On 2 June 2020, the Government of Catalonia established the 2022 Catalonia Task Force, an independent body of 30 experts from civil society, coordinated by Victòria Alsina and Genís Roca. Working on a voluntary basis, its members defined policies to assure Catalonia's competitiveness and development in the aftermath of Covid-19. They engaged in dialogue with hundreds of individuals and organizations, received more than 1,400 proposals from the public, and delivered 12 goals and 91 concrete actions to the incoming Government of Catalonia.",
+      "On June 2, 2020, the Government of Catalonia established the 2022 Catalonia Task Force, an independent body of 30 experts from civil society, coordinated by Victòria Alsina and Genís Roca. Working on a voluntary basis, its members defined policies to assure Catalonia's competitiveness and development in the aftermath of COVID-19. They engaged in dialogue with hundreds of individuals and organizations, received more than 1,400 proposals from the public, and delivered 12 goals and 91 concrete actions to the incoming Government of Catalonia.",
     organizationsSubtitle: "Over 220 Civil Society Organizations",
     organizationsTitle: "Organizations Consulted",
     organizationsDescription:
@@ -417,8 +415,10 @@ export const uiStrings: Record<Locale, UiStrings> = {
 
     homeOgSubtitle: "3 spheres · 12 goals · 91 actions",
     ogTagline: "Call to reactivate Catalonia",
-    notFoundHeading: "404: This action hasn't been proposed yet",
-    notFoundBody: "We couldn't find this sphere, goal, or action in the Catalunya 2022 document. Perhaps you could propose it for the next iteration?",
+    notFoundHeading: "404: Page not found",
+    notFoundBody: "There is no page at this address. Check the link or search the Catalunya 2022 document.",
+    notFoundBodyHierarchy: "We couldn't find this sphere, goal, or action in the Catalunya 2022 document. Perhaps you could propose it for the next iteration?",
+    notFoundSearch: "Search the document",
     goHome: "Go home",
     exploreActionPlan: "Explore the action plan",
     siteMap: "Site map",
@@ -516,10 +516,8 @@ export const uiStrings: Record<Locale, UiStrings> = {
     heroNinetyOneActions: "noventa y una acciones concretas",
     heroContextActions:
       "que abarcan la sociedad, la economía y el sector público, configuradas por casi 400 expertos colaboradores y más de 1.400 propuestas ciudadanas. Desarrollado a lo largo de dos legislaturas, por encima de las líneas de partido, el documento ya ha inspirado acciones gubernamentales posteriores. Una hoja de ruta para una Cataluña más justa, más competitiva y mejor gobernada.",
-    pdfHref: "/documents/catalunya-2022-es.pdf",
-    epubHref: "/documents/catalunya-2022-es.epub",
     actionPlanSubtitle: "Plan de Acción",
-    actionPlanTitle: "Reset: Llamamiento para reactivar el país",
+    actionPlanTitle: "RESET: Llamamiento para reactivar el país",
     actionPlanDescription:
       "El plan de acción Catalunya 2022 se organiza en tres ámbitos (sociedad, economía y sector público), con 12 objetivos y 91 acciones concretas. Explore la estructura completa a continuación o busque un tema específico.",
     sphere: "Ámbito",
@@ -562,7 +560,7 @@ export const uiStrings: Record<Locale, UiStrings> = {
       "{total} personas consultadas. Muestra (primeras {sample}):",
     organizationsCopySampleLabel:
       "{total} organizaciones participaron. Muestra (primeras {sample}):",
-    copyFullListLabel: "Para la lista completa, visite: {url}",
+    copyFullListLabel: "Para la lista completa, visita: {url}",
     noResults: "Sin resultados",
     searchErrorTitle: "La búsqueda no está disponible en este momento",
     searchErrorBody:
@@ -582,8 +580,10 @@ export const uiStrings: Record<Locale, UiStrings> = {
 
     homeOgSubtitle: "3 ámbitos · 12 objetivos · 91 acciones",
     ogTagline: "Llamamiento para reactivar el país",
-    notFoundHeading: "404: Esta acción aún no se ha propuesto",
-    notFoundBody: "No hemos encontrado este ámbito, objetivo o acción en el documento Catalunya 2022. ¿Quizás podría proponerlo para la próxima iteración?",
+    notFoundHeading: "404: Página no encontrada",
+    notFoundBody: "No hay ninguna página en esta dirección. Comprueba el enlace o busca en el documento Catalunya 2022.",
+    notFoundBodyHierarchy: "No hemos encontrado este ámbito, objetivo o acción en el documento Catalunya 2022. ¿Quizás podrías proponerlo para la próxima iteración?",
+    notFoundSearch: "Buscar en el documento",
     goHome: "Ir al inicio",
     exploreActionPlan: "Explorar el plan de acción",
     siteMap: "Mapa del sitio",

@@ -35,8 +35,6 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
-/* No ScrollArea here: SidebarContent already scrolls (overflow-auto);
-   nesting a second scroll context causes active-bg bleed. */
 import {
   Collapsible,
   CollapsibleContent,
@@ -339,7 +337,7 @@ export function SidebarNav({
           <ThemeToggle locale={locale} variant="mobile" />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent role="navigation" aria-label={t.navigation}>
         {nav.map((section, idx) => (
           <div key={section.items[0]?.slug ?? `section-${idx}`}>
             {idx > 0 && <SidebarSeparator />}

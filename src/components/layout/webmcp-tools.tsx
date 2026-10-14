@@ -6,8 +6,8 @@ import { trackEvent } from "@/lib/analytics";
 import type { WebMcpPageData } from "@/lib/webmcp-tools";
 import type { Locale } from "@/i18n/routing";
 
-async function fetchText(url: string): Promise<string> {
-  const response = await fetch(url);
+async function fetchText(url: string, signal?: AbortSignal): Promise<string> {
+  const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(String(response.status));
   return response.text();
 }
