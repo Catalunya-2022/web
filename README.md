@@ -18,10 +18,10 @@ Lloc web del document **«Catalunya 2022 - RESET: Crida per reactivar el país»
 
 ## Desenvolupament
 
-Requisits: Node.js 22 (`.nvmrc`) i npm.
+Requisits: Node.js 22 (`.nvmrc`) i npm 11 (`engines.npm >= 11`; npm 10 instal·la des del lockfile amb un avís, però no pot modificar dependències en aquest arbre).
 
 ```bash
-npm install
+npm ci
 npm run dev     # http://localhost:3000
 npm run build   # build de producció (executa abans tota la cadena de generadors)
 ```
@@ -37,7 +37,7 @@ npm run test        # Vitest: tests unitaris
 npm run test:e2e    # Playwright: e2e + regressió visual
 ```
 
-La CI executa lint, typecheck, test, build i e2e a cada push. Abans del primer `npm run test:e2e` cal instal·lar el navegador amb `npx playwright install chromium`. Les línies de base de regressió visual són específiques de cada plataforma i no es versionen: executa `npm run test:e2e:update` un cop abans del primer `npm run test:e2e` (la CI les omet amb `ignoreSnapshots`).
+La CI executa lint, typecheck, test, build i e2e a cada push. Abans del primer `npm run test:e2e` cal instal·lar el navegador amb `npx playwright install chromium`. Les línies de base de regressió visual són específiques de cada plataforma i no es versionen: executa `npm run test:e2e:update` un cop abans del primer `npm run test:e2e` (la CI les omet amb `ignoreSnapshots`). `PLAYWRIGHT_PORT` (variable del shell, no de `.env`) canvia el port 3201 del servidor d'e2e quan dues còpies del repositori executen la suite alhora.
 
 ### Scripts de generació
 
@@ -73,7 +73,7 @@ scripts/                 Generadors executats pel prebuild
 - Qualsevol canvi de contingut o de dades ha de cobrir els tres locales (`ca`, `en`, `es`) en el mateix canvi.
 - Els fitxers generats (imatges OG, corpus de cerca, família `llms.txt`, manifests PWA, dates del sitemap) no es versionen: `npm run dev` i `npm run build` els regeneren.
 - El fitxer `.txt` de 64 caràcters hexadecimals dins `public/` és la clau de verificació d'[IndexNow](https://www.indexnow.org): és pública per disseny, no és cap secret filtrat.
-- Si canvies dependències, regenera el lockfile amb el mateix npm que fa servir la CI (l'inclòs amb Node 22): `npx npm@10 install --package-lock-only`.
+- Si canvies dependències, fes-ho amb npm 11, el mateix que la CI instal·la abans d'`npm ci` (npm 10.9.x falla a Arborist en aquest arbre): `npx --yes npm@11 install <paquet>` o `npx --yes npm@11 install --package-lock-only`.
 
 ## SEO i descobriment per IA
 
@@ -89,7 +89,7 @@ El lloc de producció s'allotja darrere de Cloudflare. Els detalls de desplegame
 
 The website behind **[2022.cat](https://2022.cat)**: an explorable, trilingual edition of *"Catalunya 2022 - RESET: Call to reactivate Catalonia"*, the strategic plan written in 2021 by a 30-expert Catalan civil-society task force. It makes the document's 3 spheres, 12 goals, and 91 actions browsable and searchable in Catalan, English, and Spanish, with expert profiles and downloads.
 
-Built with Next.js 16 (App Router, React 19, 441 static pages), Tailwind CSS v4, shadcn/ui, next-intl v4 (native-language URL slugs per locale), next-mdx-remote, and flexsearch. Requires Node 22: `npm install && npm run dev`. The 64-hex `.txt` file in `public/` is the public [IndexNow](https://www.indexnow.org) ownership key, not a leaked secret.
+Built with Next.js 16 (App Router, React 19, 441 static pages), Tailwind CSS v4, shadcn/ui, next-intl v4 (native-language URL slugs per locale), next-mdx-remote, and flexsearch. Requires Node 22, and npm 11 for dependency changes: `npm ci && npm run dev`. The 64-hex `.txt` file in `public/` is the public [IndexNow](https://www.indexnow.org) ownership key, not a leaked secret.
 
 Every page also registers four read-only WebMCP tools (search, section reading, action listing and citation) for AI assistants running inside the visitor's browser; see [2022.cat/mcp](https://2022.cat/mcp).
 

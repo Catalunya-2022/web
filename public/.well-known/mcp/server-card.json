@@ -1,10 +1,42 @@
 {
+  "name": "cat.2022/catalunya-2022",
+  "title": "Catalunya 2022 - RESET: Crida per reactivar el país",
+  "version": "2.1.1",
+  "description": "Full-text access to «Catalunya 2022 - RESET: Crida per reactivar el país», the strategic policy document with 3 spheres, 12 goals, and 91 actions authored by 30 Catalan civil-society experts. Provides document search, section retrieval, proposal listings, and contributor profiles in Catalan, English, and Spanish. No authentication required.",
+  "websiteUrl": "https://2022.cat/mcp",
+  "serverUrl": "https://mcp.2022.cat",
+  "protocolVersion": "2025-11-25",
+  "repository": {
+    "url": "https://github.com/catalunya-2022/mcp",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://mcp.2022.cat/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    },
+    {
+      "src": "https://mcp.2022.cat/icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "180x180"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.2022.cat"
+    }
+  ],
   "serverInfo": {
     "name": "catalunya-2022",
     "title": "Catalunya 2022 - RESET: Crida per reactivar el país",
-    "version": "1.0.0"
+    "version": "2.1.1"
   },
-  "description": "Full-text access to «Catalunya 2022 - RESET: Crida per reactivar el país», the strategic policy document with 3 spheres, 12 goals, and 91 actions authored by 30 Catalan civil-society experts. Provides document search, section retrieval, proposal listings, and contributor profiles in Catalan, English, and Spanish. No authentication required.",
   "transport": {
     "type": "streamable-http",
     "url": "https://mcp.2022.cat"
@@ -12,7 +44,527 @@
   "capabilities": {
     "tools": {},
     "resources": {},
-    "prompts": {}
+    "prompts": {},
+    "completions": {}
   },
-  "websiteUrl": "https://2022.cat/mcp"
+  "tools": [
+    {
+      "name": "search_document",
+      "title": "Search the document",
+      "description": "Search the Catalunya 2022 - RESET policy document by keyword. Returns up to 10 results with canonical slugs (for follow-up with get_section) and text snippets; \"total\" carries the full match count. Terms are matched independently with coverage-based ranking; quoted phrases (\"energia sostenible\") must match exactly. Handles Catalan/Spanish diacritics automatically (e.g., 'educacio' matches 'educació').",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Search query (e.g., 'housing', 'educacio', 'digital transformation'). Use terms in the target locale for best results."
+          },
+          "locale": {
+            "default": "ca",
+            "description": "Content language. Defaults to 'ca' (Catalan), the original language of the document. (ca=Catalan, en=English, es=Spanish)",
+            "type": "string",
+            "enum": [
+              "ca",
+              "en",
+              "es"
+            ]
+          },
+          "scope": {
+            "description": "Filter by section type: 'action' (91 proposals), 'goal' (12 overviews), 'sphere' (3 overviews), or 'static' (introduction, executive summary, train of prosperity)",
+            "type": "string",
+            "enum": [
+              "sphere",
+              "goal",
+              "action",
+              "static"
+            ]
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "description": "Canonical section slug, usable with get_section"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "sphere",
+                    "goal",
+                    "action",
+                    "static"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "snippet": {
+                  "type": "string",
+                  "description": "Content snippet with **highlighted** matches"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Canonical page URL on 2022.cat in the requested locale"
+                },
+                "sphereId": {
+                  "description": "Present on sphere, goal, and action results",
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "goalId": {
+                  "description": "Present on goal and action results",
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "actionId": {
+                  "description": "Present on action results",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "slug",
+                "type",
+                "title",
+                "snippet",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Total matches before the 10-result cap"
+          },
+          "message": {
+            "description": "Guidance when no results were found",
+            "type": "string"
+          }
+        },
+        "required": [
+          "results",
+          "total"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_section",
+      "title": "Read a section",
+      "description": "Retrieve the full text of any section of the Catalunya 2022 document by its canonical slug. Slugs follow the pattern: 'sphere-1', 'sphere-1/goal-2', 'sphere-1/goal-2/action-2-1'. Static pages: 'introduction', 'executive-summary', 'train-of-prosperity'. Use get_document_metadata to discover all available slugs.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9-]+(?:\\/[a-z0-9-]+){0,2}$",
+            "description": "Canonical section slug"
+          },
+          "locale": {
+            "default": "ca",
+            "description": "Content language. Defaults to 'ca' (Catalan), the original language of the document. (ca=Catalan, en=English, es=Spanish)",
+            "type": "string",
+            "enum": [
+              "ca",
+              "en",
+              "es"
+            ]
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_document_metadata",
+      "title": "Document structure and citation",
+      "description": "Get the complete structure of the policy document \"Catalunya 2022 - RESET: Crida per reactivar el país\": 3 spheres, 12 goals, 91 actions created by a 30-expert Catalonia Task Force. Returns the hierarchy with canonical slugs for navigation via get_section, plus the formal citation with DOI.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locale": {
+            "default": "ca",
+            "description": "Content language. Defaults to 'ca' (Catalan), the original language of the document. (ca=Catalan, en=English, es=Spanish)",
+            "type": "string",
+            "enum": [
+              "ca",
+              "en",
+              "es"
+            ]
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "structure": {
+            "type": "object",
+            "properties": {
+              "spheres": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "goals": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "actions": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "contributors": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "spheres",
+              "goals",
+              "actions",
+              "contributors"
+            ],
+            "additionalProperties": false
+          },
+          "citation": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "year": {
+                "type": "string"
+              },
+              "doi": {
+                "type": "string"
+              },
+              "doiUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "author",
+              "year",
+              "doi",
+              "doiUrl"
+            ],
+            "additionalProperties": false
+          },
+          "hierarchy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "goals": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "actionCount": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "actions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string"
+                            },
+                            "slug": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "slug",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "slug",
+                      "id",
+                      "actionCount",
+                      "actions"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "slug",
+                "id",
+                "goals"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "staticPages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "slug"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "contributors": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "names": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "members": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "slug",
+                    "role",
+                    "url"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "count",
+              "names",
+              "members"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "title",
+          "date",
+          "languages",
+          "structure",
+          "citation",
+          "hierarchy",
+          "staticPages",
+          "contributors"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_proposals",
+      "title": "List action proposals",
+      "description": "List all 91 action proposals from the Catalunya 2022 document, optionally filtered by sphere (1-3) or goal (1-12). Returns actionId, goalId, sphereId, title, slug, and url. Use get_section with the returned slug to read full action content.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locale": {
+            "default": "ca",
+            "description": "Content language. Defaults to 'ca' (Catalan), the original language of the document. (ca=Catalan, en=English, es=Spanish)",
+            "type": "string",
+            "enum": [
+              "ca",
+              "en",
+              "es"
+            ]
+          },
+          "sphereId": {
+            "description": "Filter by sphere (1-3)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "goalId": {
+            "description": "Filter by goal (1-12)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          }
+        }
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "proposals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "actionId": {
+                  "type": "string"
+                },
+                "goalId": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "sphereId": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "actionId",
+                "goalId",
+                "sphereId",
+                "slug",
+                "title",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "count": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "proposals",
+          "count"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
 }
