@@ -162,8 +162,16 @@ describe("profilePageSchema", () => {
     expect(schema.url).toBe(base.url);
     expect(schema.mainEntity["@type"]).toBe("Person");
     expect(schema.mainEntity["@id"]).toBe(
-      "https://2022.cat/task-force/victoria-alsina#person"
+      "https://2022.cat/grup-de-treball/victoria-alsina#person"
     );
+  });
+
+  it("keeps one Person node id across locales, based on the Catalan profile URL that resolves", () => {
+    const ca = profilePageSchema(base).mainEntity["@id"];
+    const en = profilePageSchema({ ...base, locale: "en", url: "https://2022.cat/en/task-force/victoria-alsina" }).mainEntity["@id"];
+    const es = profilePageSchema({ ...base, locale: "es", url: "https://2022.cat/es/grupo-de-trabajo/victoria-alsina" }).mainEntity["@id"];
+    expect(new Set([ca, en, es]).size).toBe(1);
+    expect(ca).toBe("https://2022.cat/grup-de-treball/victoria-alsina#person");
   });
 
   it("carries the member's localized role as jobTitle, omitted for unknown slugs", () => {

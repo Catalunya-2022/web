@@ -6,6 +6,7 @@ import { getMemberBySlug } from "@/lib/data/team-members";
 import { uiStrings } from "@/lib/ui-strings";
 import { INTL_LOCALE_MAP } from "@/lib/utils";
 import { BASE_URL } from "@/lib/metadata";
+import { localizeHref } from "@/lib/path-utils";
 import { documentDownloadUrl } from "@/lib/document-downloads";
 
 export function breadcrumbListSchema(items: { name: string; url: string }[]) {
@@ -174,9 +175,12 @@ export function profilePageSchema(params: {
       : PUBLICATION_DATETIME,
     mainEntity: {
       "@type": "Person",
-      // One node per person across all three locales; a localized @id would
-      // fragment the entity (see the node-id note above ORGANIZATION_ID).
-      "@id": `${BASE_URL}/task-force/${params.memberSlug}#person`,
+      // One node per person across all three locales; a per-locale @id would
+      // fragment the entity (see the node-id note above ORGANIZATION_ID). The
+      // Catalan profile URL is the stable base: Google crawls node ids as
+      // URLs, and this one resolves with 200 where the locale-less English
+      // form only redirected (Search Console review, 2026-10-14).
+      "@id": `${BASE_URL}${localizeHref(`/task-force/${params.memberSlug}`, "ca")}#person`,
       name: params.name,
       ...(jobTitle && { jobTitle }),
       description: params.description,
