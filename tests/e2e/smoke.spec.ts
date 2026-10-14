@@ -37,6 +37,30 @@ for (const pathname of ["/", "/ambit-1/objectiu-2/accio-2-1", "/grup-de-treball/
   });
 }
 
+test("the first hero sentence varies between visits and hydrates cleanly", async ({ browser, request }) => {
+  // The prerendered HTML always carries item 0 (crawlers, no-JS clients).
+  const html = await (await request.get("/en")).text();
+  expect(html).toContain("To build a Catalonia founded on science and data.");
+
+  const sentences = new Set<string>();
+  for (let visit = 0; visit < 8; visit++) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("/en", { waitUntil: "networkidle" });
+    const label = await page.getByRole("heading", { level: 1 }).getAttribute("aria-label");
+    const href = await page.locator("[data-hero-link]").getAttribute("href");
+    expect(errors).toEqual([]);
+    expect(label).toMatch(/^RESET: .+\.$/);
+    expect(href).toMatch(/^\/en\/sphere-\d/);
+    sentences.add(label ?? "");
+    await context.close();
+  }
+  // Twelve items: eight identical draws would happen once in about 35 million runs.
+  expect(sentences.size).toBeGreaterThan(1);
+});
+
 test("keyboard search navigates to a selected result", async ({ page }) => {
   await gotoStablePage(page, "/en");
 

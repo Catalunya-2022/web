@@ -13,7 +13,18 @@ import type { Locale } from "@/i18n/routing";
 type Phase = "typing" | "holding" | "erasing" | "paused";
 type HeroTypewriterWindow = Window & {
   __CATALUNYA_FREEZE_HERO__?: boolean;
+  /** Set by the inline script in HeroSection before hydration: the item it
+   *  already wrote into the server-rendered markup, so the first client
+   *  render matches the DOM. Absent on the server and under the freeze flag. */
+  __CATALUNYA_HERO_INDEX__?: number;
 };
+
+/** Index of the item the pre-hydration script chose, or 0 (server, freeze flag, no script). */
+function getInitialIndex(itemCount: number): number {
+  if (typeof window === "undefined") return 0;
+  const chosen = (window as HeroTypewriterWindow).__CATALUNYA_HERO_INDEX__;
+  return Number.isInteger(chosen) && chosen! >= 0 && chosen! < itemCount ? chosen! : 0;
+}
 
 const TYPING_SPEED = 40;
 const ERASING_SPEED = 20;
@@ -43,24 +54,29 @@ export function HeroTypewriter({ items, locale }: { items: HeroItem[]; locale: L
   const shouldFreeze =
     typeof window !== "undefined" &&
     (window as HeroTypewriterWindow).__CATALUNYA_FREEZE_HERO__ === true;
+  const [initialIndex] = useState(() => getInitialIndex(items.length));
   const [shuffledItems, setShuffledItems] = useState(items);
-  const [index, setIndex] = useState(0);
-  const [charCount, setCharCount] = useState(resolve(items[0].text).length);
+  const [index, setIndex] = useState(initialIndex);
+  const [charCount, setCharCount] = useState(resolve(items[initialIndex].text).length);
   const [phase, setPhase] = useState<Phase>("holding");
-  const [labelCharCount, setLabelCharCount] = useState(resolve(items[0].label).length);
+  const [labelCharCount, setLabelCharCount] = useState(resolve(items[initialIndex].label).length);
   const prefersReducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotionSnapshot, getReducedMotionServerSnapshot);
   const [visibilityTick, setVisibilityTick] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [announcement, setAnnouncement] = useState("");
 
-  // Shuffle items on mount so returning visitors see a different order.
-  // Uses useEffect + rAF (not useState initializer) to avoid hydration mismatch on Link href.
+  // Shuffle the remaining items on mount so the order differs per visit. The
+  // item on screen (chosen before hydration by the HeroSection script, or item
+  // 0) stays first; both states change in one batch so the current item never
+  // changes under the animation. An effect, not an initializer: the shuffle
+  // must not alter what hydration compares against.
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
     if (!shouldFreeze) {
-      requestAnimationFrame(() =>
-        setShuffledItems([items[0], ...shuffleArray(items.slice(1))]),
-      );
+      requestAnimationFrame(() => {
+        setShuffledItems([items[initialIndex], ...shuffleArray(items.filter((_, i) => i !== initialIndex))]);
+        setIndex(0);
+      });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -180,9 +196,11 @@ export function HeroTypewriter({ items, locale }: { items: HeroItem[]; locale: L
       <h1
         className="min-h-[5.5em] text-4xl leading-tight tracking-tight sm:min-h-[5em] sm:text-5xl md:min-h-[4em] md:text-6xl"
         aria-label={`RESET: ${fullText}`}
+        data-hero-heading=""
+        suppressHydrationWarning
       >
         <span className="font-extrabold" aria-hidden="true">RESET:</span>{" "}
-        <span className="font-light" aria-hidden="true">{displayedText}</span>
+        <span className="font-light" aria-hidden="true" data-hero-text="" suppressHydrationWarning>{displayedText}</span>
         {showCursor && (
           <span
             className="ml-0.5 inline-block w-[3px] align-baseline text-primary"
@@ -213,12 +231,16 @@ export function HeroTypewriter({ items, locale }: { items: HeroItem[]; locale: L
             href={localizeHref(currentItem.slug, locale)}
             aria-hidden={!isActive}
             tabIndex={isActive ? 0 : -1}
+            data-hero-link=""
+            suppressHydrationWarning
           >
             <span>{t.learnMoreAbout}</span>
             <span
               className={`inline-block w-[5.5rem] text-left transition-opacity duration-300 ${
                 labelFading ? "opacity-0" : ""
               }`}
+              data-hero-label=""
+              suppressHydrationWarning
             >
               {labelText}
             </span>

@@ -9,7 +9,25 @@ import { McpCard } from "@/components/content/mcp-card";
 import { heroItems } from "@/lib/data/hero-items";
 import { documentDownloadPath } from "@/lib/document-downloads";
 import { uiStrings } from "@/lib/ui-strings";
+import { localized } from "@/i18n/routing";
 import type { Locale } from "@/i18n/routing";
+
+/**
+ * Runs during HTML parsing, before React hydrates (the pattern next-themes uses
+ * for the colour scheme): picks a random hero item and writes it into the
+ * server-rendered markup (item 0), then records the index for HeroTypewriter,
+ * whose first client render therefore matches the DOM. Crawlers and no-JS
+ * clients keep item 0; the visual tests set the freeze flag and skip it.
+ */
+const PICK_HERO_ITEM_SCRIPT = `(function(){try{
+if(window.__CATALUNYA_FREEZE_HERO__)return;
+var s=document.currentScript,items=JSON.parse(s.getAttribute("data-items"));
+var r=Math.floor(Math.random()*items.length);if(!r)return;
+var it=items[r],h=document.querySelector("[data-hero-heading]"),t=document.querySelector("[data-hero-text]"),l=document.querySelector("[data-hero-label]"),a=document.querySelector("[data-hero-link]");
+if(!h||!t||!l||!a)return;
+t.textContent=it.text;l.textContent=it.label;a.setAttribute("href",it.href);h.setAttribute("aria-label","RESET: "+it.text);
+window.__CATALUNYA_HERO_INDEX__=r;
+}catch(e){}})();`;
 
 export function HeroSection({ locale }: { locale: Locale }) {
   const t = uiStrings[locale];
@@ -22,6 +40,16 @@ export function HeroSection({ locale }: { locale: Locale }) {
           <GradientBadge />
         </div>
         <HeroTypewriter items={heroItems} locale={locale} />
+        <script
+          data-items={JSON.stringify(
+            heroItems.map((item) => ({
+              text: localized(item.text, locale),
+              label: localized(item.label, locale),
+              href: localizeHref(item.slug, locale),
+            })),
+          )}
+          dangerouslySetInnerHTML={{ __html: PICK_HERO_ITEM_SCRIPT }}
+        />
       </section>
       <section className="relative z-10 mb-8 print:hidden sm:mb-12">
         <div className="grid gap-8 sm:grid-cols-2">
