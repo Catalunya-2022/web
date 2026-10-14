@@ -210,7 +210,7 @@
     {
       "name": "get_document_metadata",
       "title": "Document structure and citation",
-      "description": "Get the complete structure of the policy document \"Catalunya 2022 - RESET: Crida per reactivar el país\": 3 spheres, 12 goals, 91 actions created by a 30-expert Catalonia Task Force. Returns the hierarchy with canonical slugs for navigation via get_section, plus the formal citation with DOI.",
+      "description": "Get the complete structure of the policy document \"Catalunya 2022 - RESET: Crida per reactivar el país\": 3 spheres, 12 goals, 91 actions written by the Grup de Treball Catalunya 2022 (30 civil-society experts). Returns the hierarchy with canonical slugs for navigation via get_section, plus the formal citation with DOI.",
       "inputSchema": {
         "type": "object",
         "$schema": "https://json-schema.org/draft/2020-12/schema",

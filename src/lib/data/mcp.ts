@@ -717,8 +717,8 @@ export const mcpTechnicalDetails = {
     es: "Catalán (ca), inglés (en), castellano (es). Por defecto: catalán",
   } satisfies Trilingual<string>,
   content: {
-    ca: "109 seccions, 30 perfils d'experts, ~0,56 MB de corpus",
-    en: "109 sections, 30 contributor profiles, ~0.56 MB corpus",
-    es: "109 secciones, 30 perfiles de expertos, ~0,56 MB de corpus",
+    ca: "109 seccions, 30 perfils d'experts, ~0,58 MB de corpus",
+    en: "109 sections, 30 contributor profiles, ~0.58 MB corpus",
+    es: "109 secciones, 30 perfiles de expertos, ~0,58 MB de corpus",
   } satisfies Trilingual<string>,
 };
